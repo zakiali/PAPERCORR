@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.152"
+    ComputedModelVersion    "1.153"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -44,9 +44,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "mdexter"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Aug 31 13:48:54 2010"
+  LastModifiedDate	  "Tue Aug 31 22:49:36 2010"
   RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:152>"
+  ModelVersionFormat	  "1.%<AutoIncrement:153>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -528,6 +528,14 @@ Model {
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
     }
     Block {
       BlockType		      Outport
@@ -4341,8 +4349,8 @@ Model {
     Block {
       BlockType		      SubSystem
       Name		      "ADCs"
-      Ports		      []
-      Position		      [200, 150, 240, 210]
+      Ports		      [0, 1]
+      Position		      [185, 150, 225, 210]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
@@ -4383,11 +4391,25 @@ Model {
 	}
 	Block {
 	  BlockType		  Constant
+	  Name			  "Constant"
+	  Position		  [95, 463, 110, 477]
+	  ShowName		  off
+	  Value			  "0"
+	}
+	Block {
+	  BlockType		  Constant
 	  Name			  "Constant1"
 	  Position		  [30, 140, 60, 160]
 	  ShowName		  off
 	  OutDataType		  "sfix(16)"
 	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant2"
+	  Position		  [95, 483, 110, 497]
+	  ShowName		  off
+	  Value			  "0"
 	}
 	Block {
 	  BlockType		  Goto
@@ -4468,6 +4490,15 @@ Model {
 	  ShowName		  off
 	  GotoTag		  "adc1"
 	  TagVisibility		  "global"
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  Ports			  [2, 1]
+	  Position		  [155, 461, 160, 499]
+	  ShowName		  off
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
 	}
 	Block {
 	  BlockType		  DiscretePulseGenerator
@@ -4833,6 +4864,15 @@ Model {
 	  adc_brd		  "1"
 	  adc_clk_rate		  "200"
 	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [200, 473, 230, 487]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Line {
 	  SrcBlock		  "quadc0"
 	  SrcPort		  1
@@ -4990,13 +5030,31 @@ Model {
 	  DstBlock		  "Terminator12"
 	  DstPort		  1
 	}
+	Line {
+	  SrcBlock		  "Mux"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant2"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  2
+	}
       }
     }
     Block {
       BlockType		      SubSystem
       Name		      "EQ"
-      Ports		      []
-      Position		      [408, 190, 448, 250]
+      Ports		      [1, 1]
+      Position		      [410, 190, 450, 250]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
@@ -5016,10 +5074,19 @@ Model {
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
 	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [500, 578, 530, 592]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
 	  BlockType		  Reference
 	  Name			  "Concat3"
 	  Ports			  [4, 1]
-	  Position		  [535, 276, 575, 354]
+	  Position		  [555, 336, 595, 414]
 	  ShowName		  off
 	  SourceBlock		  "xbsIndex_r4/Concat"
 	  SourceType		  "Xilinx Bus Concatenator Block"
@@ -5036,7 +5103,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From1"
-	  Position		  [25, 431, 115, 449]
+	  Position		  [45, 491, 135, 509]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "sync_fft0"
@@ -5045,7 +5112,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From24"
-	  Position		  [25, 561, 115, 579]
+	  Position		  [45, 621, 135, 639]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "sync_fft0"
@@ -5054,7 +5121,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From32"
-	  Position		  [25, 146, 115, 164]
+	  Position		  [45, 206, 135, 224]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "fft0"
@@ -5063,7 +5130,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From33"
-	  Position		  [25, 281, 115, 299]
+	  Position		  [45, 341, 135, 359]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "fft1"
@@ -5072,7 +5139,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From34"
-	  Position		  [25, 301, 115, 319]
+	  Position		  [45, 361, 135, 379]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "sync_fft0"
@@ -5081,7 +5148,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From35"
-	  Position		  [25, 321, 115, 339]
+	  Position		  [45, 381, 135, 399]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_data_1"
@@ -5090,7 +5157,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From36"
-	  Position		  [25, 166, 115, 184]
+	  Position		  [45, 226, 135, 244]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "sync_fft0"
@@ -5099,7 +5166,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From47"
-	  Position		  [25, 186, 115, 204]
+	  Position		  [45, 246, 135, 264]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_data_0"
@@ -5108,7 +5175,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From48"
-	  Position		  [25, 206, 115, 224]
+	  Position		  [45, 266, 135, 284]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_en_0"
@@ -5117,7 +5184,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From49"
-	  Position		  [25, 226, 115, 244]
+	  Position		  [45, 286, 135, 304]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_addr_0"
@@ -5126,7 +5193,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From63"
-	  Position		  [25, 341, 115, 359]
+	  Position		  [45, 401, 135, 419]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_en_1"
@@ -5135,7 +5202,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From64"
-	  Position		  [25, 361, 115, 379]
+	  Position		  [45, 421, 135, 439]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_addr_1"
@@ -5144,7 +5211,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From65"
-	  Position		  [25, 411, 115, 429]
+	  Position		  [45, 471, 135, 489]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "fft2"
@@ -5153,7 +5220,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From67"
-	  Position		  [425, 276, 515, 294]
+	  Position		  [445, 336, 535, 354]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq0"
@@ -5162,7 +5229,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From68"
-	  Position		  [425, 296, 515, 314]
+	  Position		  [445, 356, 535, 374]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq1"
@@ -5171,7 +5238,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From69"
-	  Position		  [425, 376, 515, 394]
+	  Position		  [445, 436, 535, 454]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_clip0"
@@ -5180,7 +5247,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From70"
-	  Position		  [425, 396, 515, 414]
+	  Position		  [445, 456, 535, 474]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_clip1"
@@ -5189,7 +5256,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From71"
-	  Position		  [425, 416, 515, 434]
+	  Position		  [445, 476, 535, 494]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_clip2"
@@ -5198,7 +5265,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From84"
-	  Position		  [25, 451, 115, 469]
+	  Position		  [45, 511, 135, 529]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_data_2"
@@ -5207,7 +5274,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From85"
-	  Position		  [25, 471, 115, 489]
+	  Position		  [45, 531, 135, 549]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_en_2"
@@ -5216,7 +5283,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From86"
-	  Position		  [25, 491, 115, 509]
+	  Position		  [45, 551, 135, 569]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_addr_2"
@@ -5225,7 +5292,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From87"
-	  Position		  [25, 541, 115, 559]
+	  Position		  [45, 601, 135, 619]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "fft3"
@@ -5234,7 +5301,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From89"
-	  Position		  [25, 581, 115, 599]
+	  Position		  [45, 641, 135, 659]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_data_3"
@@ -5243,7 +5310,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From90"
-	  Position		  [25, 601, 115, 619]
+	  Position		  [45, 661, 135, 679]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_en_3"
@@ -5252,7 +5319,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From91"
-	  Position		  [25, 621, 115, 639]
+	  Position		  [45, 681, 135, 699]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_addr_3"
@@ -5261,7 +5328,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From92"
-	  Position		  [425, 436, 515, 454]
+	  Position		  [445, 496, 535, 514]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq_clip3"
@@ -5270,7 +5337,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From93"
-	  Position		  [425, 316, 515, 334]
+	  Position		  [445, 376, 535, 394]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq2"
@@ -5279,7 +5346,7 @@ Model {
 	Block {
 	  BlockType		  From
 	  Name			  "From94"
-	  Position		  [425, 336, 515, 354]
+	  Position		  [445, 396, 535, 414]
 	  ShowName		  off
 	  CloseFcn		  "tagdialog Close"
 	  GotoTag		  "eq3"
@@ -5288,7 +5355,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto21"
-	  Position		  [235, 287, 320, 303]
+	  Position		  [255, 347, 340, 363]
 	  ShowName		  off
 	  GotoTag		  "eq1"
 	  TagVisibility		  "global"
@@ -5296,7 +5363,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto23"
-	  Position		  [235, 152, 320, 168]
+	  Position		  [255, 212, 340, 228]
 	  ShowName		  off
 	  GotoTag		  "eq0"
 	  TagVisibility		  "global"
@@ -5304,7 +5371,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto26"
-	  Position		  [595, 307, 680, 323]
+	  Position		  [615, 367, 700, 383]
 	  ShowName		  off
 	  GotoTag		  "eq_out"
 	  TagVisibility		  "global"
@@ -5312,7 +5379,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto27"
-	  Position		  [595, 407, 680, 423]
+	  Position		  [615, 467, 700, 483]
 	  ShowName		  off
 	  GotoTag		  "eq_clip"
 	  TagVisibility		  "global"
@@ -5320,7 +5387,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto42"
-	  Position		  [235, 222, 320, 238]
+	  Position		  [255, 282, 340, 298]
 	  ShowName		  off
 	  GotoTag		  "eq_clip0"
 	  TagVisibility		  "global"
@@ -5328,7 +5395,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto53"
-	  Position		  [235, 357, 320, 373]
+	  Position		  [255, 417, 340, 433]
 	  ShowName		  off
 	  GotoTag		  "eq_clip1"
 	  TagVisibility		  "global"
@@ -5336,7 +5403,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto54"
-	  Position		  [235, 417, 320, 433]
+	  Position		  [255, 477, 340, 493]
 	  ShowName		  off
 	  GotoTag		  "eq2"
 	  TagVisibility		  "global"
@@ -5344,7 +5411,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto58"
-	  Position		  [235, 187, 320, 203]
+	  Position		  [255, 247, 340, 263]
 	  ShowName		  off
 	  GotoTag		  "sync_rnd"
 	  TagVisibility		  "global"
@@ -5352,7 +5419,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto59"
-	  Position		  [235, 487, 320, 503]
+	  Position		  [255, 547, 340, 563]
 	  ShowName		  off
 	  GotoTag		  "eq_clip2"
 	  TagVisibility		  "global"
@@ -5360,7 +5427,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto60"
-	  Position		  [235, 547, 320, 563]
+	  Position		  [255, 607, 340, 623]
 	  ShowName		  off
 	  GotoTag		  "eq3"
 	  TagVisibility		  "global"
@@ -5368,7 +5435,7 @@ Model {
 	Block {
 	  BlockType		  Goto
 	  Name			  "Goto62"
-	  Position		  [235, 617, 320, 633]
+	  Position		  [255, 677, 340, 693]
 	  ShowName		  off
 	  GotoTag		  "eq_clip3"
 	  TagVisibility		  "global"
@@ -5377,7 +5444,7 @@ Model {
 	  BlockType		  Reference
 	  Name			  "Logical5"
 	  Ports			  [4, 1]
-	  Position		  [535, 373, 575, 457]
+	  Position		  [555, 433, 595, 517]
 	  ShowName		  off
 	  SourceBlock		  "xbsIndex_r4/Logical"
 	  SourceType		  "Xilinx Logical Block Block"
@@ -5403,26 +5470,26 @@ Model {
 	Block {
 	  BlockType		  Terminator
 	  Name			  "Terminator13"
-	  Position		  [255, 324, 265, 336]
+	  Position		  [275, 384, 285, 396]
 	  ShowName		  off
 	}
 	Block {
 	  BlockType		  Terminator
 	  Name			  "Terminator14"
-	  Position		  [255, 454, 265, 466]
+	  Position		  [275, 514, 285, 526]
 	  ShowName		  off
 	}
 	Block {
 	  BlockType		  Terminator
 	  Name			  "Terminator15"
-	  Position		  [255, 584, 265, 596]
+	  Position		  [275, 644, 285, 656]
 	  ShowName		  off
 	}
 	Block {
 	  BlockType		  SubSystem
 	  Name			  "eq0"
 	  Ports			  [5, 3]
-	  Position		  [135, 140, 215, 250]
+	  Position		  [155, 200, 235, 310]
 	  MinAlgLoopOccurrences	  off
 	  RTWSystemCode		  "Auto"
 	  FunctionWithSeparateData off
@@ -6801,7 +6868,7 @@ Model {
 	  BlockType		  SubSystem
 	  Name			  "eq1"
 	  Ports			  [5, 3]
-	  Position		  [135, 275, 215, 385]
+	  Position		  [155, 335, 235, 445]
 	  MinAlgLoopOccurrences	  off
 	  RTWSystemCode		  "Auto"
 	  FunctionWithSeparateData off
@@ -8180,7 +8247,7 @@ Model {
 	  BlockType		  SubSystem
 	  Name			  "eq2"
 	  Ports			  [5, 3]
-	  Position		  [135, 405, 215, 515]
+	  Position		  [155, 465, 235, 575]
 	  MinAlgLoopOccurrences	  off
 	  RTWSystemCode		  "Auto"
 	  FunctionWithSeparateData off
@@ -9559,7 +9626,7 @@ Model {
 	  BlockType		  SubSystem
 	  Name			  "eq3"
 	  Ports			  [5, 3]
-	  Position		  [135, 535, 215, 645]
+	  Position		  [155, 595, 235, 705]
 	  MinAlgLoopOccurrences	  off
 	  RTWSystemCode		  "Auto"
 	  FunctionWithSeparateData off
@@ -10934,6 +11001,15 @@ Model {
 	    }
 	  }
 	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [565, 578, 595, 592]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Line {
 	  SrcBlock		  "eq0"
 	  SrcPort		  1
@@ -11186,13 +11262,19 @@ Model {
 	  DstBlock		  "Concat3"
 	  DstPort		  4
 	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
 	Annotation {
 	  Name			  "Next, we reduce the bitwidth out of the FFT to 4 bits to save resources.\nThis must be done very carefully to avoid losing too much information.\nFirstly, this conversion is done using \"Round to Even\" and saturation\nlogic to avoid introducing DC offsets, wrapping, and other ugly quantizaton\neffects.  Secondly, the \"equalizer\" allows each frequency channel of the\nFFT to be scaled by a different number.  This allows passbands which are\nnot flat to be flattened digitally to allow for optimal quantization to 4 bits.\nThese coefficients can also be updated dynamically for gain control.\nCoefficients can be dynamically written into the \"equalizer\" by\nspecifying the channel (\"coeff_addr\") and the value of the\ncoefficient (\"coeff\"), and then using \"coeff_en\" to write the\nnew coefficient into the equalization table."
-	  Position		  [166, 29]
+	  Position		  [186, 89]
 	  DropShadow		  on
 	}
 	Annotation {
-	  Position		  [184, 183]
+	  Position		  [204, 243]
 	}
       }
     }
@@ -12754,8 +12836,8 @@ Model {
     Block {
       BlockType		      SubSystem
       Name		      "PFBs"
-      Ports		      []
-      Position		      [336, 190, 376, 250]
+      Ports		      [1, 1]
+      Position		      [335, 190, 375, 250]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
@@ -12774,6 +12856,15 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [640, 348, 670, 362]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Block {
 	  BlockType		  From
 	  Name			  "From112"
@@ -13252,6 +13343,15 @@ Model {
 	  sg_icon_stat		  "115,60,1,1,white,blue,0,46e341cf,right"
 	  sg_mask_display	  "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 56 56 ],[0.77 0.82 0.91]);\npatch([13 4 17 4 13 28 32 36 52 40 28 19 32 19 28 40 52 36 32 28 13 ],[6 15 28 41 50 50 46 50 50 38 50 41 28 15 6 18 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 56 56 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sync');\ncolor('black');port_label('input',2,'in0');\ncolor('black');port_label('input',3,'in1');\ncolor('black');port_label('output',1,'sync_out');\ncolor('black');port_label('output',2,'out0');\ncolor('black');port_label('output',3,'out1');\nfprintf('','COMMENT: end icon text');\n"
 	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [705, 348, 735, 362]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Line {
 	  SrcBlock		  "From112"
 	  SrcPort		  1
@@ -13514,6 +13614,12 @@ Model {
 	  SrcBlock		  "pfb_fir_bb3"
 	  SrcPort		  1
 	  DstBlock		  "Terminator9"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
       }
@@ -14443,8 +14549,8 @@ Model {
     Block {
       BlockType		      SubSystem
       Name		      "Transpose"
-      Ports		      []
-      Position		      [479, 190, 519, 250]
+      Ports		      [1, 1]
+      Position		      [480, 190, 520, 250]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
@@ -14463,6 +14569,15 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [60, 338, 90, 352]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Block {
 	  BlockType		  From
 	  Name			  "From"
@@ -20672,6 +20787,15 @@ Model {
 	    }
 	  }
 	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [125, 338, 155, 352]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Line {
 	  SrcBlock		  "fft2x_tvg"
 	  SrcPort		  1
@@ -20745,6 +20869,12 @@ Model {
 	  DstBlock		  "fft2x_tvg"
 	  DstPort		  1
 	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
 	Annotation {
 	  Name			  "A matrix transpose is performed in SRAM so that 128 samples of frequency\nchannel 0 are output, followed by 128 samples of channel 1, and so forth.\nThese blocks of samples for a single channel are turned into 10 GbE packets\non the X engine, and are then routed through a swittch.  \"one_ant_a_time\"\noutputs 128 samples for channel 0 (both polarizations) of one antenna,\nand then 128 samples for channel 0 of the other antenna, followed by \nchannel 1 of the first antenna, and so on.  This allows the X engine design to\npass data directly from the XAUI into a packet containing 128 time samples\nfor 1 frequency from 1 antenna."
 	  Position		  [350, 77]
@@ -20763,8 +20893,8 @@ Model {
     Block {
       BlockType		      SubSystem
       Name		      "WGNs"
-      Ports		      []
-      Position		      [200, 230, 240, 290]
+      Ports		      [0, 1]
+      Position		      [185, 230, 225, 290]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
       FunctionWithSeparateData off
@@ -20783,6 +20913,20 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant"
+	  Position		  [100, 393, 115, 407]
+	  ShowName		  off
+	  Value			  "0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant2"
+	  Position		  [100, 413, 115, 427]
+	  ShowName		  off
+	  Value			  "0"
+	}
 	Block {
 	  BlockType		  From
 	  Name			  "From1"
@@ -20918,6 +21062,15 @@ Model {
 	  ShowName		  off
 	  GotoTag		  "n21"
 	  TagVisibility		  "global"
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  Ports			  [2, 1]
+	  Position		  [160, 391, 165, 429]
+	  ShowName		  off
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
 	}
 	Block {
 	  BlockType		  SubSystem
@@ -25467,6 +25620,15 @@ Model {
 	    }
 	  }
 	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [205, 403, 235, 417]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Line {
 	  SrcBlock		  "noise0"
 	  SrcPort		  1
@@ -25563,12 +25725,30 @@ Model {
 	  DstBlock		  "noise1"
 	  DstPort		  2
 	}
+	Line {
+	  SrcBlock		  "Mux"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant2"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  2
+	}
       }
     }
     Block {
       BlockType		      SubSystem
       Name		      "XAUI"
-      Ports		      []
+      Ports		      [1]
       Position		      [550, 190, 590, 250]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
@@ -25588,6 +25768,15 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [30, 388, 60, 402]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Block {
 	  BlockType		  Reference
 	  Name			  "Constant4"
@@ -25912,6 +26101,12 @@ Model {
 	  ShowName		  off
 	  GotoTag		  "xaui_buffer_overflow"
 	  TagVisibility		  "global"
+	}
+	Block {
+	  BlockType		  Terminator
+	  Name			  "Terminator"
+	  Position		  [75, 390, 85, 400]
+	  ShowName		  off
 	}
 	Block {
 	  BlockType		  Terminator
@@ -30617,6 +30812,12 @@ Model {
 	  DstBlock		  "Goto41"
 	  DstPort		  1
 	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Terminator"
+	  DstPort		  1
+	}
 	Annotation {
 	  Name			  "Finally, for the packetized correlator F Engine, data is sent over\nXAUI to the BEE2/ROACH.  We choose to transmit 64 bits every other clock\nso that the bandwidth of the link is never saturated, regardless of whether\nthe IBOB is clocked above or below the 156.25 MHz XAUI clock.\nOut-of-band signals (which are guaranteed to arrive aligned with\ntx_data) carry signalling data."
 	  Position		  [483, 58]
@@ -30714,7 +30915,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Delay1"
 	      Ports		      [1, 1]
-	      Position		      [260, 91, 285, 119]
+	      Position		      [260, 126, 285, 154]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Delay"
 	      SourceType	      "Xilinx Delay Block"
@@ -30736,7 +30937,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Delay2"
 	      Ports		      [1, 1]
-	      Position		      [260, 266, 285, 294]
+	      Position		      [260, 301, 285, 329]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Delay"
 	      SourceType	      "Xilinx Delay Block"
@@ -30758,7 +30959,7 @@ Model {
 	      BlockType		      SubSystem
 	      Name		      "Feng_ctl"
 	      Ports		      [3, 2]
-	      Position		      [105, 83, 185, 157]
+	      Position		      [105, 118, 185, 192]
 	      AttributesFormatString  "Mapped address: 8192"
 	      MinAlgLoopOccurrences   off
 	      RTWSystemCode	      "Auto"
@@ -31095,7 +31296,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From37"
-	      Position		      [25, 261, 85, 279]
+	      Position		      [25, 296, 85, 314]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_data"
@@ -31104,7 +31305,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From54"
-	      Position		      [25, 286, 85, 304]
+	      Position		      [25, 321, 85, 339]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_addr"
@@ -31113,7 +31314,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From57"
-	      Position		      [25, 311, 85, 329]
+	      Position		      [25, 346, 85, 364]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_en"
@@ -31122,7 +31323,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From60"
-	      Position		      [25, 86, 85, 104]
+	      Position		      [25, 121, 85, 139]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_data"
@@ -31131,7 +31332,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From61"
-	      Position		      [25, 111, 85, 129]
+	      Position		      [25, 146, 85, 164]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_addr"
@@ -31140,7 +31341,7 @@ Model {
 	    Block {
 	      BlockType		      From
 	      Name		      "From62"
-	      Position		      [25, 136, 85, 154]
+	      Position		      [25, 171, 85, 189]
 	      ShowName		      off
 	      CloseFcn		      "tagdialog Close"
 	      GotoTag		      "ctl_en"
@@ -31149,7 +31350,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto"
-	      Position		      [405, 137, 485, 153]
+	      Position		      [405, 172, 485, 188]
 	      ShowName		      off
 	      GotoTag		      "use_sram_tvg"
 	      TagVisibility	      "global"
@@ -31157,7 +31358,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto47"
-	      Position		      [405, 97, 485, 113]
+	      Position		      [405, 132, 485, 148]
 	      ShowName		      off
 	      GotoTag		      "use_fft_tvg"
 	      TagVisibility	      "global"
@@ -31165,7 +31366,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto48"
-	      Position		      [405, 177, 485, 193]
+	      Position		      [405, 212, 485, 228]
 	      ShowName		      off
 	      GotoTag		      "arm_rst"
 	      TagVisibility	      "global"
@@ -31173,7 +31374,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto49"
-	      Position		      [405, 272, 485, 288]
+	      Position		      [405, 307, 485, 323]
 	      ShowName		      off
 	      GotoTag		      "ant_base_offset"
 	      TagVisibility	      "global"
@@ -31181,7 +31382,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto50"
-	      Position		      [405, 198, 485, 212]
+	      Position		      [405, 233, 485, 247]
 	      ShowName		      off
 	      GotoTag		      "sync_rst"
 	      TagVisibility	      "global"
@@ -31189,7 +31390,7 @@ Model {
 	    Block {
 	      BlockType		      Goto
 	      Name		      "Goto51"
-	      Position		      [405, 217, 485, 233]
+	      Position		      [405, 252, 485, 268]
 	      ShowName		      off
 	      GotoTag		      "fft_shift"
 	      TagVisibility	      "global"
@@ -31198,7 +31399,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Slice21"
 	      Ports		      [1, 1]
-	      Position		      [335, 216, 360, 234]
+	      Position		      [335, 251, 360, 269]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Slice"
 	      SourceType	      "Xilinx Bit Slice Extractor Block"
@@ -31222,7 +31423,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Slice6"
 	      Ports		      [1, 1]
-	      Position		      [335, 196, 360, 214]
+	      Position		      [335, 231, 360, 249]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Slice"
 	      SourceType	      "Xilinx Bit Slice Extractor Block"
@@ -31246,7 +31447,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Slice7"
 	      Ports		      [1, 1]
-	      Position		      [335, 176, 360, 194]
+	      Position		      [335, 211, 360, 229]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Slice"
 	      SourceType	      "Xilinx Bit Slice Extractor Block"
@@ -31270,7 +31471,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Slice8"
 	      Ports		      [1, 1]
-	      Position		      [335, 96, 360, 114]
+	      Position		      [335, 131, 360, 149]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Slice"
 	      SourceType	      "Xilinx Bit Slice Extractor Block"
@@ -31294,7 +31495,7 @@ Model {
 	      BlockType		      Reference
 	      Name		      "Slice9"
 	      Ports		      [1, 1]
-	      Position		      [335, 136, 360, 154]
+	      Position		      [335, 171, 360, 189]
 	      ShowName		      off
 	      SourceBlock	      "xbsIndex_r4/Slice"
 	      SourceType	      "Xilinx Bit Slice Extractor Block"
@@ -31317,20 +31518,20 @@ Model {
 	    Block {
 	      BlockType		      Terminator
 	      Name		      "Terminator13"
-	      Position		      [220, 305, 240, 325]
+	      Position		      [220, 340, 240, 360]
 	      ShowName		      off
 	    }
 	    Block {
 	      BlockType		      Terminator
 	      Name		      "Terminator6"
-	      Position		      [215, 130, 235, 150]
+	      Position		      [215, 165, 235, 185]
 	      ShowName		      off
 	    }
 	    Block {
 	      BlockType		      SubSystem
 	      Name		      "ant_base_offset_ctl"
 	      Ports		      [3, 2]
-	      Position		      [105, 258, 185, 332]
+	      Position		      [105, 293, 185, 367]
 	      AttributesFormatString  "Mapped address: 8193"
 	      MinAlgLoopOccurrences   off
 	      RTWSystemCode	      "Auto"
@@ -31797,7 +31998,7 @@ Model {
 	    }
 	    Annotation {
 	      Name		      "fft_shift: bits 0-15\nsync_rst: bit 16\narm_rst: bit 17\nunused: bit 18\nuse_sram_tvg: bit 19\nunused: bit20\nfft_tvg1: bit 21\nfft_tvg2: bit 22"
-	      Position		      [371, 29]
+	      Position		      [371, 64]
 	      DropShadow	      on
 	    }
 	  }
@@ -35452,7 +35653,7 @@ Model {
     Block {
       BlockType		      SubSystem
       Name		      "input_mux"
-      Ports		      []
+      Ports		      [2, 1]
       Position		      [265, 190, 305, 250]
       MinAlgLoopOccurrences   off
       RTWSystemCode	      "Auto"
@@ -35472,6 +35673,25 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [630, 558, 660, 572]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  Position		  [630, 583, 660, 597]
+	  ShowName		  off
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
 	Block {
 	  BlockType		  Reference
 	  Name			  "Delay"
@@ -35864,6 +36084,12 @@ Model {
 	  TagVisibility		  "global"
 	}
 	Block {
+	  BlockType		  Terminator
+	  Name			  "Terminator"
+	  Position		  [705, 585, 715, 595]
+	  ShowName		  off
+	}
+	Block {
 	  BlockType		  SubSystem
 	  Name			  "muxin0"
 	  Ports			  [5, 1]
@@ -35943,7 +36169,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -35972,7 +36198,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -35999,7 +36225,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -36137,7 +36363,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36166,7 +36392,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36193,7 +36419,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -36331,7 +36557,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36360,7 +36586,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36387,7 +36613,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -36525,7 +36751,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36554,7 +36780,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36581,7 +36807,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -36719,7 +36945,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36748,7 +36974,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36775,7 +37001,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -36913,7 +37139,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36942,7 +37168,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -36969,7 +37195,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -37107,7 +37333,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -37136,7 +37362,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -37163,7 +37389,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -37301,7 +37527,7 @@ Model {
 	      block_type	      "addrsr"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "40,138,1,1,white,blue,0,c4974527,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 40 40 0 ],[0 0 138 138 ],[0.77 0.82 0.91]);\npatch([10 3 12 3 10 21 24 27 38 29 20 14 24 14 20 29 38 27 24 21 10 ],[53 60 69 78 85 85 82 85 85 76 85 79 69 59 53 62 53 53 56 53 53 ],[0.98 0.96 0.92]);\nplot([0 40 40 0 0 ],[0 0 138 138 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 60 60 0 ],[0 0 58 58 ],[0.77 0.82 0.91]);\npatch([15 5 19 5 15 30 34 38 54 41 29 20 34 20 29 41 54 38 34 30 15 ],[6 16 30 44 54 54 50 54 54 41 53 44 30 16 7 19 6 6 10 6 6 ],[0.98 0.96 0.92]);\nplot([0 60 60 0 0 ],[0 0 58 58 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'d');\ncolor('black');port_label('input',2,'addr');\ncolor('black');port_label('output',1,'q');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -37330,7 +37556,7 @@ Model {
 	      block_type	      "constant"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "30,14,1,1,white,blue,0,72d575a1,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 30 30 0 ],[0 0 14 14 ],[0.77 0.82 0.91]);\npatch([11 9 12 9 11 15 16 17 21 18 15 13 16 13 15 18 21 17 16 15 11 ],[2 4 7 10 12 12 11 12 12 9 12 10 7 4 2 5 2 2 3 2 2 ],[0.98 0.96 0.92]);\nplot([0 30 30 0 0 ],[0 0 14 14 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 55 55 0 ],[0 0 26 26 ],[0.77 0.82 0.91]);\npatch([20 16 22 16 20 27 29 31 38 32 26 22 28 22 26 32 38 31 29 27 20 ],[3 7 13 19 23 23 21 23 23 17 23 19 13 7 3 9 3 3 5 3 3 ],[0.98 0.96 0.92]);\nplot([0 55 55 0 0 ],[0 0 26 26 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('output',1,'0');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Reference
@@ -37357,7 +37583,7 @@ Model {
 	      block_type	      "mux"
 	      block_version	      "10.1.3"
 	      sg_icon_stat	      "20,104,1,1,white,blue,3,4258e972,right"
-	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 20 20 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([4 1 6 1 4 9 10 11 17 13 9 6 11 6 9 13 17 11 10 9 4 ],[44 47 52 57 60 60 59 60 60 56 60 57 52 47 44 48 44 44 45 44 44 ],[0.98 0.96 0.92]);\nplot([0 20 20 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
+	      sg_mask_display	      "fprintf('','COMMENT: begin icon graphics');\npatch([0 45 45 0 ],[0 14.8571 89.1429 104 ],[0.77 0.82 0.91]);\npatch([10 3 14 3 10 22 25 28 41 31 21 14 25 14 21 31 41 28 25 22 10 ],[34 41 52 63 70 70 67 70 70 60 70 63 52 41 34 44 34 34 37 34 34 ],[0.98 0.96 0.92]);\nplot([0 45 45 0 0 ],[0 14.8571 89.1429 104 0 ]);\nfprintf('','COMMENT: end icon graphics');\nfprintf('','COMMENT: begin icon text');\ncolor('black');port_label('input',1,'sel');\ncolor('black');port_label('input',2,'d0');\ncolor('black');port_label('input',3,'d1');\ncolor('black');port_label('input',4,'d2');\ncolor('black');port_label('input',5,'d3');\ncolor('black');disp('\\bf{  z^{-1}}','texmode','on');\nfprintf('','COMMENT: end icon text');\n"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -37414,6 +37640,15 @@ Model {
 	      DstPort		      5
 	    }
 	  }
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [695, 558, 725, 572]
+	  ShowName		  off
+	  IconDisplay		  "Port number"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Line {
 	  SrcBlock		  "From44"
@@ -37731,6 +37966,18 @@ Model {
 	  DstBlock		  "Goto77"
 	  DstPort		  1
 	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Terminator"
+	  DstPort		  1
+	}
       }
     }
     Block {
@@ -37751,6 +37998,44 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       pcore_path	      "pfb_fir_core/pfb_fir_core.ngc"
+    }
+    Line {
+      SrcBlock		      "ADCs"
+      SrcPort		      1
+      Points		      [10, 0; 0, 25]
+      DstBlock		      "input_mux"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "WGNs"
+      SrcPort		      1
+      Points		      [10, 0; 0, -25]
+      DstBlock		      "input_mux"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "input_mux"
+      SrcPort		      1
+      DstBlock		      "PFBs"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "PFBs"
+      SrcPort		      1
+      DstBlock		      "EQ"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "EQ"
+      SrcPort		      1
+      DstBlock		      "Transpose"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Transpose"
+      SrcPort		      1
+      DstBlock		      "XAUI"
+      DstPort		      1
     }
     Annotation {
       Name		      "rev 304 2009/06/16\n* First assembly\n* Not tested\n\nrev 306: 2009-10-26\n* First assembly from rev 304 (JM) and rev305c (HC and GF)\n\n2009-10-28: overmapped, removed ADC amplitude sw regs.\n10h55 still overmapped, removed xaui snap"

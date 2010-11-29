@@ -1,0 +1,7 @@
+include scripts/*
+include src/*
+include tests/*.py
+include setup.py
+include MANIFEST.in
+include src/rx/*
+include src/rx/include/*

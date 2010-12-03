@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: corr
+Version: 0.4.2
+Summary: Allows control of CASPER packetised correlators
+Home-page: casper.berkeley.edu
+Author: Jason Manley
+Author-email: jason_manley at hotmail.com
+License: GPL
+Description: Allows control of CASPER packetised correlators. Version 0.4.0 onwards uses KatCP control protocol. Designed for 10GbE output correlators. Requires AIPY-0.5.5, numpy, stats.
+Platform: UNKNOWN

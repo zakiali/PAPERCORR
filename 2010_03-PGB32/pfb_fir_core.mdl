@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.23"
+    ComputedModelVersion    "1.24"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -44,9 +44,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "mdexter"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jul 23 13:38:41 2010"
+  LastModifiedDate	  "Mon Nov 22 16:03:50 2010"
   RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:23>"
+  ModelVersionFormat	  "1.%<AutoIncrement:24>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -1017,7 +1017,7 @@ Model {
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "11|4|hamming|0|0|8|18|8|0|1|2|3|Round  (unbiased: Even Values)|1|off|[2                                      2]"
+      MaskValueString	      "12|4|hamming|0|0|8|18|8|0|1|2|3|Round  (unbiased: +/- Inf)|1|off|[2                                      2]"
       MaskTabNameString	      ",,,,,,,,,,,,,,,"
       System {
 	Name			"pfb_fir"
@@ -1076,7 +1076,7 @@ Model {
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "0|11|8|4|8|0|hamming|2|3|0|1|on|off"
+	  MaskValueString	  "0|12|8|4|8|0|hamming|2|3|0|1|on|off"
 	  MaskTabNameString	  ",,,,,,,,,,,,"
 	  System {
 	    Name		    "pol1_in1_first_tap"
@@ -1124,14 +1124,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -1157,14 +1157,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -1330,7 +1330,7 @@ Model {
 	      Ports		      [2, 3]
 	      Position		      [95, 22, 190, 98]
 	      BackgroundColor	      "[0.501961, 0.501961, 0.501961]"
-	      AttributesFormatString  "PFBSize=11, n_inputs=0, taps=4"
+	      AttributesFormatString  "PFBSize=12, n_inputs=0, taps=4"
 	      AncestorBlock	      "casper_library/PFBs/pfb_coeff_gen"
 	      UserDataPersistent      on
 	      UserData		      "DataTag5"
@@ -1353,7 +1353,7 @@ Model {
 	      MaskIconOpaque	      on
 	      MaskIconRotate	      "none"
 	      MaskIconUnits	      "autoscale"
-	      MaskValueString	      "11|8|4|0|hamming|3|0|0|1"
+	      MaskValueString	      "12|8|4|0|hamming|3|0|0|1"
 	      MaskTabNameString	      ",,,,,,,,"
 	      System {
 		Name			"pfb_coeff_gen"
@@ -1396,7 +1396,7 @@ Model {
 		  SourceType		  "Xilinx Bus Concatenator Block"
 		  infoedit		  "Concatenates two or more inputs.  Output will be cast to an unsigned value with the binary point at zero."
 		  num_inputs		  "4"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "concat"
@@ -1418,18 +1418,18 @@ Model {
 		  start_count		  "0"
 		  cnt_by_val		  "1"
 		  arith_type		  "Unsigned"
-		  n_bits		  "11"
+		  n_bits		  "12"
 		  bin_pt		  "0"
-		  load_pin		  "off"
-		  rst			  "on"
-		  en			  "off"
+		  load_pin		  off
+		  rst			  on
+		  en			  off
 		  explicit_period	  "on"
 		  period		  "1"
-		  dbl_ovrd		  "off"
-		  use_behavioral_HDL	  "off"
-		  use_rpm		  "on"
+		  dbl_ovrd		  off
+		  use_behavioral_HDL	  off
+		  use_rpm		  on
 		  implementation	  "Fabric"
-		  xl_use_area		  "off"
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "20,20,407,692"
@@ -1446,11 +1446,11 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Delay"
 		  SourceType		  "Xilinx Delay Block"
 		  infoedit		  "Hardware notes: A delay line is a chain, each link of which is an SRL16 followed by a flip-flop."
-		  en			  "off"
+		  en			  off
 		  latency		  "bram_latency+1"
-		  dbl_ovrd		  "off"
-		  reg_retiming		  "off"
-		  xl_use_area		  "off"
+		  dbl_ovrd		  off
+		  reg_retiming		  off
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1467,11 +1467,11 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Delay"
 		  SourceType		  "Xilinx Delay Block"
 		  infoedit		  "Hardware notes: A delay line is a chain, each link of which is an SRL16 followed by a flip-flop."
-		  en			  "off"
+		  en			  off
 		  latency		  "4"
-		  dbl_ovrd		  "off"
-		  reg_retiming		  "off"
-		  xl_use_area		  "off"
+		  dbl_ovrd		  off
+		  reg_retiming		  off
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1487,20 +1487,20 @@ Model {
 		  Position		  [150, 74, 200, 126]
 		  SourceBlock		  "xbsIndex_r4/ROM"
 		  SourceType		  "Xilinx Single Port Read-Only Memory Block"
-		  depth			  "2048"
-		  initVector		  "pfb_coeff_gen_calc(11, 4,'hamming',0, 0,1,1)"
+		  depth			  "4096"
+		  initVector		  "pfb_coeff_gen_calc(12, 4,'hamming',0, 0,1,1)"
 		  distributed_mem	  "Block RAM"
-		  rst			  "off"
+		  rst			  off
 		  init_reg		  "0"
-		  en			  "off"
+		  en			  off
 		  latency		  "3"
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "8"
 		  bin_pt		  "7"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  optimize		  "Area"
-		  use_rpm		  "on"
-		  xl_use_area		  "off"
+		  use_rpm		  on
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1516,20 +1516,20 @@ Model {
 		  Position		  [150, 139, 200, 191]
 		  SourceBlock		  "xbsIndex_r4/ROM"
 		  SourceType		  "Xilinx Single Port Read-Only Memory Block"
-		  depth			  "2048"
-		  initVector		  "pfb_coeff_gen_calc(11, 4,'hamming',0, 0,1,2)"
+		  depth			  "4096"
+		  initVector		  "pfb_coeff_gen_calc(12, 4,'hamming',0, 0,1,2)"
 		  distributed_mem	  "Block RAM"
-		  rst			  "off"
+		  rst			  off
 		  init_reg		  "0"
-		  en			  "off"
+		  en			  off
 		  latency		  "3"
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "8"
 		  bin_pt		  "7"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  optimize		  "Area"
-		  use_rpm		  "on"
-		  xl_use_area		  "off"
+		  use_rpm		  on
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1545,20 +1545,20 @@ Model {
 		  Position		  [150, 204, 200, 256]
 		  SourceBlock		  "xbsIndex_r4/ROM"
 		  SourceType		  "Xilinx Single Port Read-Only Memory Block"
-		  depth			  "2048"
-		  initVector		  "pfb_coeff_gen_calc(11, 4,'hamming',0, 0,1,3)"
+		  depth			  "4096"
+		  initVector		  "pfb_coeff_gen_calc(12, 4,'hamming',0, 0,1,3)"
 		  distributed_mem	  "Block RAM"
-		  rst			  "off"
+		  rst			  off
 		  init_reg		  "0"
-		  en			  "off"
+		  en			  off
 		  latency		  "3"
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "8"
 		  bin_pt		  "7"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  optimize		  "Area"
-		  use_rpm		  "on"
-		  xl_use_area		  "off"
+		  use_rpm		  on
+		  xl_use_area		  off
 		  xl_area		  "[0,0,0,0,0,0,0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1574,20 +1574,20 @@ Model {
 		  Position		  [150, 269, 200, 321]
 		  SourceBlock		  "xbsIndex_r4/ROM"
 		  SourceType		  "Xilinx Single Port Read-Only Memory Block"
-		  depth			  "2048"
-		  initVector		  "pfb_coeff_gen_calc(11, 4,'hamming',0, 0,1,4)"
+		  depth			  "4096"
+		  initVector		  "pfb_coeff_gen_calc(12, 4,'hamming',0, 0,1,4)"
 		  distributed_mem	  "Block RAM"
-		  rst			  "off"
+		  rst			  off
 		  init_reg		  "0"
-		  en			  "off"
+		  en			  off
 		  latency		  "3"
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "8"
 		  bin_pt		  "7"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  optimize		  "Area"
-		  use_rpm		  "on"
-		  xl_use_area		  "off"
+		  use_rpm		  on
+		  xl_use_area		  off
 		  xl_area		  "[0,0,0,0,0,0,0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1604,10 +1604,10 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Register"
 		  SourceType		  "Xilinx Register Block"
 		  init			  "0"
-		  rst			  "off"
-		  en			  "off"
-		  dbl_ovrd		  "off"
-		  xl_use_area		  "off"
+		  rst			  off
+		  en			  off
+		  dbl_ovrd		  off
+		  xl_use_area		  off
 		  xl_area		  "[0, 0, 0, 0, 0, 0, 0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1624,9 +1624,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Unsigned"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "0"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1643,9 +1643,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Unsigned"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "0"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1662,9 +1662,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Unsigned"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "0"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -1681,9 +1681,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Unsigned"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "0"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2217,7 +2217,7 @@ Model {
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "4|8|18|8|1|2|Round  (unbiased: Even Values)|on|off"
+	  MaskValueString	  "4|8|18|8|1|2|Round  (unbiased: +/- Inf)|on|off"
 	  MaskTabNameString	  ",,,,,,,,"
 	  System {
 	    Name		    "pol1_in1_last_tap"
@@ -2321,14 +2321,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -2354,14 +2354,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -2463,7 +2463,7 @@ Model {
 	      MaskIconOpaque	      on
 	      MaskIconRotate	      "none"
 	      MaskIconUnits	      "autoscale"
-	      MaskValueString	      "4|8|18|8|1|Round  (unbiased: Even Values)"
+	      MaskValueString	      "4|8|18|8|1|Round  (unbiased: +/- Inf)"
 	      MaskTabNameString	      ",,,,,"
 	      System {
 		Name			"pfb_add_tree"
@@ -2501,9 +2501,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2520,9 +2520,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2539,9 +2539,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2558,9 +2558,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2577,9 +2577,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2596,9 +2596,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2615,9 +2615,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2634,9 +2634,9 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Reinterpret"
 		  SourceType		  "Xilinx Type Reinterpreter Block"
 		  infoedit		  "Changes signal type without altering the binary representation.   You can changed the signal between signed and unsigned, and relocate the binary point.<P><P>Hardware notes: In hardware this block costs nothing.<P><P>Example:  Suppose the input is 6 bits wide, signed, with 2 fractional bits, and the output is forced to unsigned with 0 fractional bits.  Then an input of -2.0 (1110.00 in binary 2's complement) becomes an output of 56 (111000 in binary)."
-		  force_arith_type	  "on"
+		  force_arith_type	  on
 		  arith_type		  "Signed  (2's comp)"
-		  force_bin_pt		  "on"
+		  force_bin_pt		  on
 		  bin_pt		  "14"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -2654,13 +2654,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "0"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2677,13 +2677,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-16"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2700,13 +2700,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-32"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2723,13 +2723,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-48"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2746,13 +2746,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-64"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2769,13 +2769,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-80"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2792,13 +2792,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-96"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2815,13 +2815,13 @@ Model {
 		  SourceType		  "Xilinx Bit Slice Extractor Block"
 		  infoedit		  "Extracts a given range of bits from each input sample and presents it at the output.  The output type is ordinarily unsigned with binary point at zero, but can be Boolean when the slice is one bit wide.<P><P>Hardware notes: In hardware this block costs nothing."
 		  nbits			  "16"
-		  boolean_output	  "off"
+		  boolean_output	  off
 		  mode			  "Upper Bit Location + Width"
 		  bit1			  "-112"
 		  base1			  "MSB of Input"
 		  bit0			  "0"
 		  base0			  "MSB of Input"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "slice"
@@ -2919,9 +2919,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -2929,12 +2929,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -2951,9 +2951,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -2961,12 +2961,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -2983,9 +2983,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -2993,12 +2993,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3015,11 +3015,11 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/Delay"
 		    SourceType		    "Xilinx Delay Block"
 		    infoedit		    "Hardware notes: A delay line is a chain, each link of which is an SRL16 followed by a flip-flop."
-		    en			    "off"
+		    en			    off
 		    latency		    "2"
-		    dbl_ovrd		    "off"
-		    reg_retiming	    "off"
-		    xl_use_area		    "off"
+		    dbl_ovrd		    off
+		    reg_retiming	    on
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3187,9 +3187,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -3197,12 +3197,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3219,9 +3219,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -3229,12 +3229,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3251,9 +3251,9 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/AddSub"
 		    SourceType		    "Xilinx Adder/Subtractor Block"
 		    mode		    "Addition"
-		    use_carryin		    "off"
-		    use_carryout	    "off"
-		    en			    "off"
+		    use_carryin		    off
+		    use_carryout	    off
+		    en			    off
 		    latency		    "1"
 		    precision		    "Full"
 		    arith_type		    "Unsigned"
@@ -3261,12 +3261,12 @@ Model {
 		    bin_pt		    "14"
 		    quantization	    "Truncate"
 		    overflow		    "Wrap"
-		    dbl_ovrd		    "off"
-		    use_behavioral_HDL	    "off"
-		    pipelined		    "on"
-		    use_rpm		    "on"
+		    dbl_ovrd		    off
+		    use_behavioral_HDL	    off
+		    pipelined		    on
+		    use_rpm		    on
 		    hw_selection	    "Fabric"
-		    xl_use_area		    "off"
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3283,11 +3283,11 @@ Model {
 		    SourceBlock		    "xbsIndex_r4/Delay"
 		    SourceType		    "Xilinx Delay Block"
 		    infoedit		    "Hardware notes: A delay line is a chain, each link of which is an SRL16 followed by a flip-flop."
-		    en			    "off"
+		    en			    off
 		    latency		    "2"
-		    dbl_ovrd		    "off"
-		    reg_retiming	    "off"
-		    xl_use_area		    "off"
+		    dbl_ovrd		    off
+		    reg_retiming	    on
+		    xl_use_area		    off
 		    xl_area		    "[0,0,0,0,0,0,0]"
 		    has_advanced_control    "0"
 		    sggui_pos		    "-1,-1,-1,-1"
@@ -3376,12 +3376,12 @@ Model {
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "18"
 		  bin_pt		  "17"
-		  quantization		  "Round  (unbiased: Even Values)"
+		  quantization		  "Round  (unbiased: +/- Inf)"
 		  overflow		  "Saturate"
 		  latency		  "1"
-		  dbl_ovrd		  "off"
-		  pipeline		  "on"
-		  xl_use_area		  "off"
+		  dbl_ovrd		  off
+		  pipeline		  on
+		  xl_use_area		  off
 		  xl_area		  "[0,0,0,0,0,0,0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -3401,12 +3401,12 @@ Model {
 		  arith_type		  "Signed  (2's comp)"
 		  n_bits		  "18"
 		  bin_pt		  "17"
-		  quantization		  "Round  (unbiased: Even Values)"
+		  quantization		  "Round  (unbiased: +/- Inf)"
 		  overflow		  "Saturate"
 		  latency		  "1"
-		  dbl_ovrd		  "off"
-		  pipeline		  "off"
-		  xl_use_area		  "off"
+		  dbl_ovrd		  off
+		  pipeline		  off
+		  xl_use_area		  off
 		  xl_area		  "[0,0,0,0,0,0,0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -3423,11 +3423,11 @@ Model {
 		  SourceBlock		  "xbsIndex_r4/Delay"
 		  SourceType		  "Xilinx Delay Block"
 		  infoedit		  "Hardware notes: A delay line is a chain, each link of which is an SRL16 followed by a flip-flop."
-		  en			  "off"
+		  en			  off
 		  latency		  "1"
-		  dbl_ovrd		  "off"
-		  reg_retiming		  "off"
-		  xl_use_area		  "off"
+		  dbl_ovrd		  off
+		  reg_retiming		  off
+		  xl_use_area		  off
 		  xl_area		  "[0,0,0,0,0,0,0]"
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
@@ -3460,11 +3460,11 @@ Model {
 		  }
 		  UserDataPersistent	  on
 		  UserData		  "DataTag11"
-		  SourceBlock		  "casper_library/Misc/ri_to_c"
+		  SourceBlock		  "casper_library_misc/ri_to_c"
 		  SourceType		  "ri_to_c"
 		  ShowPortLabels	  "FromPortIcon"
 		  SystemSampleTime	  "-1"
-		  FunctionWithSeparateData "off"
+		  FunctionWithSeparateData off
 		  RTWMemSecFuncInitTerm	  "Inherit from model"
 		  RTWMemSecFuncExecute	  "Inherit from model"
 		  RTWMemSecDataConstants  "Inherit from model"
@@ -3480,7 +3480,7 @@ Model {
 		  SourceType		  "Xilinx Input Scaler Block"
 		  infoedit		  "Scales input by a power of two by adjusting the binary point position.<P><P>Hardware notes: In hardware this block costs nothing."
 		  scale_factor		  "-3"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "scale"
@@ -3497,7 +3497,7 @@ Model {
 		  SourceType		  "Xilinx Input Scaler Block"
 		  infoedit		  "Scales input by a power of two by adjusting the binary point position.<P><P>Hardware notes: In hardware this block costs nothing."
 		  scale_factor		  "-3"
-		  dbl_ovrd		  "off"
+		  dbl_ovrd		  off
 		  has_advanced_control	  "0"
 		  sggui_pos		  "-1,-1,-1,-1"
 		  block_type		  "scale"
@@ -3996,7 +3996,7 @@ Model {
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "2|8|7|2048|8|3|on|off"
+	  MaskValueString	  "2|8|7|4096|8|3|on|off"
 	  MaskTabNameString	  ",,,,,,,"
 	  System {
 	    Name		    "pol1_in1_tap2"
@@ -4079,14 +4079,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -4112,14 +4112,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -4660,7 +4660,7 @@ Model {
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
 	  MaskIconUnits		  "autoscale"
-	  MaskValueString	  "2|8|7|2048|8|3|on|off"
+	  MaskValueString	  "2|8|7|4096|8|3|on|off"
 	  MaskTabNameString	  ",,,,,,,"
 	  System {
 	    Name		    "pol1_in1_tap3"
@@ -4743,14 +4743,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -4776,14 +4776,14 @@ Model {
 	      bin_pt		      "2"
 	      quantization	      "Truncate"
 	      overflow		      "Wrap"
-	      en		      "off"
+	      en		      off
 	      latency		      "mult_latency"
-	      dbl_ovrd		      "off"
-	      use_behavioral_HDL      "on"
-	      use_embedded	      "off"
+	      dbl_ovrd		      off
+	      use_behavioral_HDL      on
+	      use_embedded	      off
 	      opt		      "Speed"
-	      optimum_pipeline	      "off"
-	      xl_use_area	      "off"
+	      optimum_pipeline	      off
+	      xl_use_area	      off
 	      xl_area		      "[0, 0, 0, 0, 0, 0, 0]"
 	      pipeline		      "on"
 	      use_rpm		      "on"
@@ -5717,15 +5717,15 @@ MatData {
   }
   DataRecord {
     Tag			    DataTag10
-    Data		    "  %)30     .    N (   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ (ZI0@,.    * (   8    (     @         %    \"     $    !     0         %  0 $     $   !0    9&5F875L=',          &Y?:6YP=71S          !L871E;F-Y            9FER<W1?<W1A9V5?:&1L &)E:&%V:6]R86P        .    J     8    (     0         %    \"     $    \"     0         .    .     8    (    !          %    \"     $    '     0         0    !P   &QA=&5N8WD #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X    X    !@    @    &          4    (     0    $    !          D    (            $$ .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  "
+    Data		    "  %)30     .    0 0   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ #^V! ,.    L ,   8    (     @         %    \"     $    !     0         %  0 $     $   !0    9&5F875L=',          &Y?:6YP=71S          !L871E;F-Y            9FER<W1?<W1A9V5?:&1L &)E:&%V:6]R86P        .    , (   8    (     0         %    \"     $    (     0         .    .     8    (    !          %    \"     $    (     0         0    \"    &Y?:6YP=71S#@   #@    &    \"     8         !0    @    !     0    $         \"0    @            (0 X    X    !@    @    $          4    (     0    <    !         !     '    ;&%T96YC>0 .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    #P    $         $     \\   !F:7)S=%]S=&%G95]H9&P #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    0     8    (    !          %    \"     $    )     0         0    \"0   &%D9&5R7VEM<          .    .     8    (    !          %    \"     $    &     0         0    !@   $9A8G)I8P  #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            00 X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  X    P    !@    @    $          4    (     0    ,    !         !   P!O9F8 "
   }
   DataRecord {
     Tag			    DataTag9
-    Data		    "  %)30     .    N (   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ (ZI0@,.    * (   8    (     @         %    \"     $    !     0         %  0 $     $   !0    9&5F875L=',          &Y?:6YP=71S          !L871E;F-Y            9FER<W1?<W1A9V5?:&1L &)E:&%V:6]R86P        .    J     8    (     0         %    \"     $    \"     0         .    .     8    (    !          %    \"     $    '     0         0    !P   &QA=&5N8WD #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X    X    !@    @    &          4    (     0    $    !          D    (            $$ .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  "
+    Data		    "  %)30     .    0 0   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ #^V! ,.    L ,   8    (     @         %    \"     $    !     0         %  0 $     $   !0    9&5F875L=',          &Y?:6YP=71S          !L871E;F-Y            9FER<W1?<W1A9V5?:&1L &)E:&%V:6]R86P        .    , (   8    (     0         %    \"     $    (     0         .    .     8    (    !          %    \"     $    (     0         0    \"    &Y?:6YP=71S#@   #@    &    \"     8         !0    @    !     0    $         \"0    @            (0 X    X    !@    @    $          4    (     0    <    !         !     '    ;&%T96YC>0 .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    #P    $         $     \\   !F:7)S=%]S=&%G95]H9&P #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    0     8    (    !          %    \"     $    )     0         0    \"0   &%D9&5R7VEM<          .    .     8    (    !          %    \"     $    &     0         0    !@   $9A8G)I8P  #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            00 X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  X    P    !@    @    $          4    (     0    ,    !         !   P!O9F8 "
   }
   DataRecord {
     Tag			    DataTag8
-    Data		    "  %)30     .    ^ (   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ ! TB $.    : (   8    (     @         %    \"     $    !     0         %  0 #@    $   !B    9&5F875L=',       !4;W1A;%1A<',      $)I=%=I9'1H26X     0FET5VED=&A/=70   !#;V5F9D)I=%=I9'1H &%D9%]L871E;F-Y    <75A;G1I>F%T:6]N           .    *     8    (     0         %    \"                0         .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            ,D .    .     8    (    !@         %    \"     $    !     0         )    \"            \"! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @           #P/PX   !0    !@    @    $          4    (     0   !X    !         !     >    4F]U;F0@(\"AU;F)I87-E9#H@179E;B!686QU97,I   "
+    Data		    "  %)30     .    ^ (   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ $XTVP(.    : (   8    (     @         %    \"     $    !     0         %  0 #@    $   !B    9&5F875L=',       !4;W1A;%1A<',      $)I=%=I9'1H26X     0FET5VED=&A/=70   !#;V5F9D)I=%=I9'1H &%D9%]L871E;F-Y    <75A;G1I>F%T:6]N           .    *     8    (     0         %    \"                0         .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            ,D .    .     8    (    !@         %    \"     $    !     0         )    \"            \"! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @           #P/PX   !0    !@    @    $          4    (     0   !H    !         !     :    4F]U;F0@(\"AU;F)I87-E9#H@*R\\M($EN9BD        "
   }
   DataRecord {
     Tag			    DataTag7
@@ -5733,11 +5733,11 @@ MatData {
   }
   DataRecord {
     Tag			    DataTag6
-    Data		    "  %)30     .    T ,   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ (_@?P .    0 ,   8    (     @         %    \"     $    !     0         %  0 #@    $   \",    9&5F875L=',       !4;W1A;%1A<',      $)I=%=I9'1H26X     0FET5VED=&A/=70   !#;V5F9D)I=%=I9'1H &%D9%]L871E;F-Y    ;75L=%]L871E;F-Y  !Q=6%N=&EZ871I;VX  '5S95]H9&P         =7-E7V5M8F5D9&5D        #@   \"@    &    \"     $         !0    @               $         #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            00 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            #) #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   %     &    \"     0         !0    @    !    '@    $         $    !X   !2;W5N9\" @*'5N8FEA<V5D.B!%=F5N(%9A;'5E<RD   X    P    !@    @    $          4    (     0    (    !         !   @!O;@  #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ "
+    Data		    "  %)30     .    T ,   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ $VS604.    0 ,   8    (     @         %    \"     $    !     0         %  0 #@    $   \",    9&5F875L=',       !4;W1A;%1A<',      $)I=%=I9'1H26X     0FET5VED=&A/=70   !#;V5F9D)I=%=I9'1H &%D9%]L871E;F-Y    ;75L=%]L871E;F-Y  !Q=6%N=&EZ871I;VX  '5S95]H9&P         =7-E7V5M8F5D9&5D        #@   \"@    &    \"     $         !0    @               $         #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            00 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            #) #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   %     &    \"     0         !0    @    !    &@    $         $    !H   !2;W5N9\" @*'5N8FEA<V5D.B K+RT@26YF*0        X    P    !@    @    $          4    (     0    (    !         !   @!O;@  #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ "
   }
   DataRecord {
     Tag			    DataTag5
-    Data		    "  %)30     .    R ,   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ '1.H (.    . ,   8    (     @         %    \"     $    !     0         %  0 #@    $   \",    9&5F875L=',       !01D)3:7IE         $-O969F0FET5VED=&@ 5&]T86Q487!S      !#;V5F9D1I<W1-96T  %=I;F1O=U1Y<&4     8G)A;5]L871E;F-Y  !N7VEN<'5T<P       &YP=70             9G=I9'1H                #@   \"@    &    \"     $         !0    @               $         #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            F0 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    $          4    (     0    <    !         !     '    :&%M;6EN9P .    .     8    (    !@         %    \"     $    !     0         )    \"             A #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !@         %    \"     $    !     0         )    \"            / _"
+    Data		    "  %)30     .    R ,   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ '43J ,.    . ,   8    (     @         %    \"     $    !     0         %  0 #@    $   \",    9&5F875L=',       !01D)3:7IE         $-O969F0FET5VED=&@ 5&]T86Q487!S      !#;V5F9D1I<W1-96T  %=I;F1O=U1Y<&4     8G)A;5]L871E;F-Y  !N7VEN<'5T<P       &YP=70             9G=I9'1H                #@   \"@    &    \"     $         !0    @               $         #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            H0 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    $          4    (     0    <    !         !     '    :&%M;6EN9P .    .     8    (    !@         %    \"     $    !     0         )    \"             A #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !@         %    \"     $    !     0         )    \"            / _"
   }
   DataRecord {
     Tag			    DataTag4
@@ -5745,11 +5745,11 @@ MatData {
   }
   DataRecord {
     Tag			    DataTag3
-    Data		    "  %)30     .    \\ 0   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ #T@\\@$.    8 0   8    (     @         %    \"     $    !     0         %  0 #@    $   #$    9&5F875L=',       !N<'5T             %!&0E-I>F4         0V]E9F9\":717:61T: !4;W1A;%1A<',      $)I=%=I9'1H26X     0V]E9F9$:7-T365M  !7:6YD;W=4>7!E     &UU;'1?;&%T96YC>0  8G)A;5]L871E;F-Y  !N7VEN<'5T<P       &9W:61T:           =7-E7VAD;         !U<V5?96UB961D960        .    *     8    (     0         %    \"                0         .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            F0 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !          %    \"     $    '     0         0    !P   &AA;6UI;F< #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X    X    !@    @    &          4    (     0    $    !          D    (            \"$ .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @           #P/PX    P    !@    @    $          4    (     0    (    !         !   @!O;@  #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ "
+    Data		    "  %)30     .    \\ 0   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ )RDC0(.    8 0   8    (     @         %    \"     $    !     0         %  0 #@    $   #$    9&5F875L=',       !N<'5T             %!&0E-I>F4         0V]E9F9\":717:61T: !4;W1A;%1A<',      $)I=%=I9'1H26X     0V]E9F9$:7-T365M  !7:6YD;W=4>7!E     &UU;'1?;&%T96YC>0  8G)A;5]L871E;F-Y  !N7VEN<'5T<P       &9W:61T:           =7-E7VAD;         !U<V5?96UB961D960        .    *     8    (     0         %    \"                0         .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            H0 X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !          %    \"     $    '     0         0    !P   &AA;6UI;F< #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X    X    !@    @    &          4    (     0    $    !          D    (            \"$ .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @           #P/PX    P    !@    @    $          4    (     0    (    !         !   @!O;@  #@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ "
   }
   DataRecord {
     Tag			    DataTag2
-    Data		    "  %)30     .    @ X   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ )(NQP4.    \\ T   8    (     @         %    \"     $    !     0         %  0 #@    $   #N    9&5F875L=',       !01D)3:7IE         %1O=&%L5&%P<P      5VEN9&]W5'EP90    !N7VEN<'5T<P       $UA:V5\":7!L97@     0FET5VED=&A);@    !\":717:61T:$]U=    $-O969F0FET5VED=&@ 0V]E9F9$:7-T365M  !A9&1?;&%T96YC>0   &UU;'1?;&%T96YC>0  8G)A;5]L871E;F-Y  !Q=6%N=&EZ871I;VX  &9W:61T:           <W!E8VEF>5]M=6QT  !M=6QT7W-P96,         #@   *@(   &    \"     $         !0    @    !    (     $         #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !01D)3:7IE  X    X    !@    @    &          4    (     0    $    !          D    (            %$ .    0     8    (    !          %    \"     $    )     0         0    \"0   %1O=&%L5&%P<P         .    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   $     &    \"     0         !0    @    !    \"@    $         $     H   !7:6YD;W=4>7!E        #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !H86UM:6YG  X    X    !@    @    $          4    (     0    @    !         !     (    ;E]I;G!U=',.    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    \"@    $         $     H   !-86ME0FEP;&5X        #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X   !     !@    @    $          4    (     0    H    !         !     *    0FET5VED=&A);@        X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    0     8    (    !          %    \"     $    +     0         0    \"P   $)I=%=I9'1H3W5T       .    .     8    (    !@         %    \"     $    !     0         )    \"            #) #@   $     &    \"     0         !0    @    !    #0    $         $     T   !#;V5F9D)I=%=I9'1H    #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            R0 X   !     !@    @    $          4    (     0    P    !         !     ,    0V]E9F9$:7-T365M      X    X    !@    @    &          4    (     0    $    !          D    (               .    0     8    (    !          %    \"     $    +     0         0    \"P   &%D9%]L871E;F-Y       .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    #     $         $     P   !M=6QT7VQA=&5N8WD     #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X   !     !@    @    $          4    (     0    P    !         !     ,    8G)A;5]L871E;F-Y      X    X    !@    @    &          4    (     0    $    !          D    (             $ .    0     8    (    !          %    \"     $    ,     0         0    #    '%U86YT:7IA=&EO;@     .    4     8    (    !          %    \"     $    :     0         0    &@   %)O=6YD(\" H=6YB:6%S960Z(\"LO+2!);F8I        #@   #@    &    \"     0         !0    @    !    !@    $         $     8   !F=VED=&@   X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    0     8    (    !          %    \"     $    ,     0         0    #    '-P96-I9GE?;75L=      .    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  X   !     !@    @    $          4    (     0    D    !         !     )    ;75L=%]S<&5C          X   !     !@    @    &          4    (     0    (    !          D    0             $          0 X    X    !@    @    &          4    (     0    $    !          D    (            )D .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !H86UM:6YG  X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            ,D .    .     8    (    !@         %    \"     $    !     0         )    \"            \"! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            (0 X   !0    !@    @    $          4    (     0   !X    !         !     >    4F]U;F0@(\"AU;F)I87-E9#H@179E;B!686QU97,I   .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    0     8    (    !@         %    \"     $    \"     0         )    $             !          $ "
+    Data		    "  %)30     .    @ X   8    (     @         %    \"     $    !     0         %  0 \"P    $    6    <W1A=&4       !P87)A;65T97)S    #@   #     &    \"     T         !0    @    !     0    $         !@ $ /,!!0$.    \\ T   8    (     @         %    \"     $    !     0         %  0 #@    $   #N    9&5F875L=',       !01D)3:7IE         %1O=&%L5&%P<P      5VEN9&]W5'EP90    !N7VEN<'5T<P       $UA:V5\":7!L97@     0FET5VED=&A);@    !\":717:61T:$]U=    $-O969F0FET5VED=&@ 0V]E9F9$:7-T365M  !A9&1?;&%T96YC>0   &UU;'1?;&%T96YC>0  8G)A;5]L871E;F-Y  !Q=6%N=&EZ871I;VX  &9W:61T:           <W!E8VEF>5]M=6QT  !M=6QT7W-P96,         #@   *@(   &    \"     $         !0    @    !    (     $         #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !01D)3:7IE  X    X    !@    @    &          4    (     0    $    !          D    (            %$ .    0     8    (    !          %    \"     $    )     0         0    \"0   %1O=&%L5&%P<P         .    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   $     &    \"     0         !0    @    !    \"@    $         $     H   !7:6YD;W=4>7!E        #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !H86UM:6YG  X    X    !@    @    $          4    (     0    @    !         !     (    ;E]I;G!U=',.    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    \"@    $         $     H   !-86ME0FEP;&5X        #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X   !     !@    @    $          4    (     0    H    !         !     *    0FET5VED=&A);@        X    X    !@    @    &          4    (     0    $    !          D    (            ($ .    0     8    (    !          %    \"     $    +     0         0    \"P   $)I=%=I9'1H3W5T       .    .     8    (    !@         %    \"     $    !     0         )    \"            #) #@   $     &    \"     0         !0    @    !    #0    $         $     T   !#;V5F9D)I=%=I9'1H    #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            R0 X   !     !@    @    $          4    (     0    P    !         !     ,    0V]E9F9$:7-T365M      X    X    !@    @    &          4    (     0    $    !          D    (               .    0     8    (    !          %    \"     $    +     0         0    \"P   &%D9%]L871E;F-Y       .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   $     &    \"     0         !0    @    !    #     $         $     P   !M=6QT7VQA=&5N8WD     #@   #@    &    \"     8         !0    @    !     0    $         \"0    @             0 X   !     !@    @    $          4    (     0    P    !         !     ,    8G)A;5]L871E;F-Y      X    X    !@    @    &          4    (     0    $    !          D    (             $ .    0     8    (    !          %    \"     $    ,     0         0    #    '%U86YT:7IA=&EO;@     .    4     8    (    !          %    \"     $    :     0         0    &@   %)O=6YD(\" H=6YB:6%S960Z(\"LO+2!);F8I        #@   #@    &    \"     0         !0    @    !    !@    $         $     8   !F=VED=&@   X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    0     8    (    !          %    \"     $    ,     0         0    #    '-P96-I9GE?;75L=      .    ,     8    (    !          %    \"     $    #     0         0  , ;V9F  X   !     !@    @    $          4    (     0    D    !         !     )    ;75L=%]S<&5C          X   !     !@    @    &          4    (     0    (    !          D    0             $          0 X    X    !@    @    &          4    (     0    $    !          D    (            *$ .    .     8    (    !@         %    \"     $    !     0         )    \"            !! #@   #@    &    \"     0         !0    @    !    !P    $         $     <   !H86UM:6YG  X    X    !@    @    &          4    (     0    $    !          D    (               .    .     8    (    !@         %    \"     $    !     0         )    \"               #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            @0 X    X    !@    @    &          4    (     0    $    !          D    (            ,D .    .     8    (    !@         %    \"     $    !     0         )    \"            \"! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @               X    X    !@    @    &          4    (     0    $    !          D    (            \\#\\.    .     8    (    !@         %    \"     $    !     0         )    \"             ! #@   #@    &    \"     8         !0    @    !     0    $         \"0    @            (0 X   !0    !@    @    $          4    (     0   !H    !         !     :    4F]U;F0@(\"AU;F)I87-E9#H@*R\\M($EN9BD        .    .     8    (    !@         %    \"     $    !     0         )    \"            / _#@   #     &    \"     0         !0    @    !     P    $         $  # &]F9@ .    0     8    (    !@         %    \"     $    \"     0         )    $             !          $ "
   }
   DataRecord {
     Tag			    DataTag1

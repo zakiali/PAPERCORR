@@ -66,7 +66,7 @@ class DataReceiver(rx.BufferSocket):
 
             #t is julian date. ephem measures days since noon, 31st Dec 1899 (!random!), so we need an offset from uni time:
             t = a.phs.ephem2juldate(((tcnt/self.adc_rate) + 2209032000)*ephem.second)
-            
+
             #print "fwrite callback:",i,j,pol,tcnt,data.size,flags.size
 
             #if i==0 and j==0 and pol==0: print '0-0-0: ',sum(data)
@@ -80,13 +80,13 @@ class DataReceiver(rx.BufferSocket):
                 if (t > (self.filestart + self.t_per_file)) or self.uv == None:
                     if self.uv != None:
                         del(self.uv)
-                        print 'Ending file:', 
+                        print 'Ending file:',
                         print self.fname, '->', self.fname.replace('.tmp','')
                         os.rename(self.fname, self.fname.replace('.tmp',''))
                     self.fname = 'zen.%07.5f.uv.tmp' % t
                     print a.phs.juldate2ephem(t),
                     print 'Starting file:', self.fname
-                    self.uv = start_uv_file(self.fname, aa, pols=pols, 
+                    self.uv = start_uv_file(self.fname, aa, pols=pols,
                         nchan=nchan, sfreq=sfreq, sdf=sdf, inttime=inttime)
                     self.filestart = t
 
@@ -100,10 +100,12 @@ class DataReceiver(rx.BufferSocket):
             crd = aa[j].pos - aa[i].pos
             preamble = (crd, t, (i,j))
 
-            if i!=j or pols[pol] in ['xy','yx']: 
+            # Only clip RFI if visibilities are being stored as scaled shorts
+            # and it is not an autocorrelation.
+            if self.uv.vartable['corr'] == 'j' and (i!=j or pols[pol] in ['xy','yx']):
                 dabs = n.abs(data)
-                data = n.where(dabs>1.0,data/dabs,data)
-            self.uv.write(preamble, data, flags) #clips RFI to realistic value of 1, motivated by miriad dynamic range readout issue.  D.Jacobs 9 May 2010
+                data = n.where(dabs>1.0,data/dabs,data) #clips RFI to realistic value of 1, motivated by miriad dynamic range readout issue.  D.Jacobs 9 May 2010
+            self.uv.write(preamble, data, flags)
 
 
         self.cb.set_callback(filewrite_callback)
@@ -116,9 +118,9 @@ class DataReceiver(rx.BufferSocket):
         rx.BufferSocket.stop(self)
         if self.uv != None:
             del(self.uv)
-            print 'Ending file:', 
+            print 'Ending file:',
             print self.fname, '->', self.fname.replace('.tmp','')
             os.rename(self.fname, self.fname.replace('.tmp',''))
 
-        
+
 

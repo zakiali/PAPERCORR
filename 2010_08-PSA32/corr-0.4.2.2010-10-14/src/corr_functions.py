@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-""" 
+"""
 Selection of commonly-used correlator control functions.
 Requires X engine version 330 and F engine 310 or greater.
 
@@ -7,7 +7,7 @@ UNDER CONSTRUCTION
 
 Author: Jason Manley\n
 Revisions:\n
-2010-04-02  JCL Removed base_ant0 software register from Xengines, moved it to Fengines, and renamed it to use ibob_addr0 and ibob_data0.  
+2010-04-02  JCL Removed base_ant0 software register from Xengines, moved it to Fengines, and renamed it to use ibob_addr0 and ibob_data0.
                 New function write_ibob().
                 Check for VACC errors.
 2010-01-06  JRM Added gbe_out enable to X engine control register
@@ -37,10 +37,10 @@ class Correlator:
         conn_check=self.check_katcp_connections()
         if (conn_check.count(False) != 0):
             fails=[]
-            for i in range(len(conn_check)): 
-                if (conn_check[i] == False): 
+            for i in range(len(conn_check)):
+                if (conn_check[i] == False):
                     fails.append(self.servers[i] + ',')
-            raise RuntimeError("Connection to %s failed."%''.join(fails)) 
+            raise RuntimeError("Connection to %s failed."%''.join(fails))
 
         #self.speadstream = spead.SpeadStream(self.config['rx_udp_ip_str'],self.config['rx_udp_port'],"corr_n","A packetised correlator SPEAD stream.")
 
@@ -73,7 +73,7 @@ class Correlator:
 
     def write_all_ibobs(self,addr,data):
         """Writes a value to all IBOBs through the Xengine, across XAUI.
-        addr maps to the 32 MSbs of the XAUI link. 
+        addr maps to the 32 MSbs of the XAUI link.
         data maps to the 32 LSbs."""
         #WORKING 2009-07-01
         for i in range(self.config['n_xaui_ports_per_fpga']):
@@ -83,15 +83,15 @@ class Correlator:
 
     def write_ibob(self,fpga_idx,xaui_idx,addr,data):
         """Writes a value to a single IBOB through the Xengine, across XAUI.
-        
+
         Options:
-            fpga_idx:     Integer.   fpga index numbering is based on configuration file.  
+            fpga_idx:     Integer.   fpga index numbering is based on configuration file.
                                      Example:  if psa16.conf contains the following line:
                                                     servers = roach020142:7147,roach020138:7147,roach020139:7147,roach020135:7147, then fpga_idx=0 corresponds to roach020142, fpga_idx=1 corresponds to roach020138, etc.
             xaui_idx:     Integer.   xaui_idx specifies which XAUI port to write data across.
                                      Example:  if each ROACH had 3 IBOBs connected to it, this allows us to specify that we want to write a value to the IBOB connected to that particular XAUI port for the ROACH specified by fpga_idx.
             addr:         Integer.   Specifies where in the IBOB the data will end up.
-                                     addr maps to the 32 MSbs of the XAUI link. 
+                                     addr maps to the 32 MSbs of the XAUI link.
                                      Example:  antenna offset has a defined value of 8193
             data:         Integer.   Data to be written to addr in IBOB.
                                      data maps to the 32 LSbs.
@@ -135,16 +135,52 @@ class Correlator:
                 'cnt_rst':bool(value&(1<<8)),
                 'vacc_rst':bool(value&(1<<0))} for value in all_values]
 
-    def arm(self):
-        """Arms all F engines. Returns the time at which the system was sync'd (MCNT=0)"""
+    def arm(self,mode='auto'):
+        """Arms all F engines. Returns the time at which the system was sync'd (MCNT=0).
+            Mode allows user to specify:
+            "soft": if we're doing a software arm, which doesn't work across multiple boards, but useful if 1PPS lines aren't physically connected.
+            "int": Internal, by triggering through a serial port's DTR line (configured in global config file).
+            "ext": Assume the presence of an external 1PPS signal whose rising edge is second-boundary aligned.
+            "auto" (default): do whatever the config file says.
+"""
+        # Updated 2010-04-13, added all lines containing "msp" -- send out a pulse over serial port to 1PPS box
         #WORKING 2009-07-01
         #wait for within 100ms of a half-second, then send out the arm signal.
         ready=(int(time.time()*10)%5)==0
-        while not ready: 
+        while not ready:
             ready=(int(time.time()*10)%5)==0
-        trig_time=numpy.ceil(time.time()) #Good for PAPER ibob F engine rev 306. KAT will require a +1 second here.
+
         self.write_all_feng_ctrl(arm_rst=False)
         self.write_all_feng_ctrl(arm_rst=True)
+
+        if mode == "auto": mode = self.config['trig_mode']
+
+        if mode == "int":
+            import serial
+            msp = serial.Serial(port=self.config['int_trig_serial_port'])
+            #wait for within 100ms of a 2-second boundary (modify as appropriate)
+            ready=(int(time.time()*10)%20)==0
+            while not ready:
+                ready=(int(time.time()*10)%20)==0
+            msp.setDTR(level=0)
+            msp.setDTR(level=1)
+            msp.setDTR(level=0)
+            trig_time=numpy.ceil(time.time()) #Good for PAPER ibob F engine rev 306. KAT will require a +1 second here.
+        elif mode == "soft":
+            raise RuntimeError("Soft trigger not yet implemented (see corr_functions.py 'arm' function")
+            #wait for within 100ms of a 2-second boundary (modify as appropriate)
+#            ready=(int(time.time()*10)%20)==0
+#            while not ready:
+#                ready=(int(time.time()*10)%20)==0
+#
+#            self.write_all_ibob_ctrl(set the soft trigger bit)
+#            trig_time=numpy.floor(time.time())
+
+        elif mode == "ext":
+            trig_time=numpy.ceil(time.time()) #Good for PAPER ibob F engin.  KAT will require a +1 second here.
+
+        else:  raise RuntimeError("Invalid trigger mode specified.  You gave %s, where valid options are auto, soft, int or ext."%mode)
+
         self.config['sync_time']=trig_time
         return trig_time
 
@@ -159,7 +195,7 @@ class Correlator:
         return [fpga.read_uint(register) for fpga in self.fpgas]
 
     def get_bee2_gbe_conf(port,start_addr,fpga):
-        """Generates a 10GbE configuration string for BEE2s starting from 
+        """Generates a 10GbE configuration string for BEE2s starting from
         ip "start_addr" for FPGA numbered "FPGA" (offset from start addr)"""
         gbe_conf = """begin\n\tmac = 00:12:6D:AE:%02X:%02X\n\tip = %i.%i.%i.%i\n\tgateway = %i.%i.0.1\n\tport = %i\nend\n"""
     #+ chr(255)
@@ -171,7 +207,7 @@ class Correlator:
         return gbe_conf % (ip_3,ip_4,ip_1,ip_2,ip_3,ip_4,ip_1,ip_2,port)
 
     def get_roach_gbe_conf(self,start_addr,fpga,port):
-        """Generates 10GbE configuration strings for ROACH-based xengines starting from 
+        """Generates 10GbE configuration strings for ROACH-based xengines starting from
         ip "start_addr" for FPGA numbered "FPGA" (offset from start addr).
         Returns a (mac,ip,port) tuple suitable for passing to tap_start."""
         sys.stdout.flush()
@@ -277,7 +313,7 @@ class Correlator:
             for f in range(self.config['n_ants']/self.config['n_ants_per_xaui']/self.config['n_xaui_ports_per_fpga']):
                 firstloopmcnt,firstgbemcnt=struct.unpack('>HH',firstpass_check[f])
                 secondloopmcnt,secondgbemcnt=struct.unpack('>HH',secondpass_check[f])
-                if abs(secondloopmcnt - secondgbemcnt) > (self.config['x_per_fpga']*len(self.fpgas)): 
+                if abs(secondloopmcnt - secondgbemcnt) > (self.config['x_per_fpga']*len(self.fpgas)):
                     rv=False
                     if verbose: print('\tFAILURE! Loopback mux on %s GbE port %i is not syncd.' %(self.servers[f],x))
 
@@ -328,7 +364,7 @@ class Correlator:
             return False
 
     def sel_vacc_tvg(self,constant=0,n_values=-1,spike_value=-1,spike_location=0,counter=False):
-        """Select Vector Accumulator TVG. Disables VACC (and other) TVGs in the process. 
+        """Select Vector Accumulator TVG. Disables VACC (and other) TVGs in the process.
             Options can be any combination of the following:
                 constant:   Integer.    Insert a constant value for accumulation.
                 n_values:   Integer.    How many numbers to inject into VACC. Value less than zero uses xengine timing.
@@ -350,7 +386,7 @@ class Correlator:
 
         if n_values>0:
             ctrl += (1<<2)
-            
+
         for xeng in range(self.config['x_per_fpga']):
             self.write_int_all('vacc_tvg%i_write1'%(xeng),constant)
             self.write_int_all('vacc_tvg%i_ins_vect_loc'%(xeng),spike_location)
@@ -372,7 +408,7 @@ class Correlator:
         if mode>4 or mode<0:
             raise RuntimeError("Invalid mode selection. Mode must be in range(0,4).")
         else:
-            self.write_int_all('tvg_sel',mode<<3) 
+            self.write_int_all('tvg_sel',mode<<3)
 
         if mode==3:
             for i,v in enumerate(user_val):
@@ -394,17 +430,17 @@ class Correlator:
 
     def get_ant_index(self, fpga, xaui, antpol):
         " Returns the (antenna,pol) index located on a given fpga, xaui port and adc input. antenna is integer, pol is 'x' or 'y'."
-        if fpga >= len(self.fpgas): 
+        if fpga >= len(self.fpgas):
             raise RuntimeError("FPGA specified (%i) is out of range (there are only %i fpgas in this design)."%(fpga,len(self.fpgas)))
-        if xaui >= self.config['n_xaui_ports_per_fpga']: 
+        if xaui >= self.config['n_xaui_ports_per_fpga']:
             raise RuntimeError("XAUI specified (%i) is out of range (there are only %i ports per FPGA)."%(xaui,self.config['n_xaui_ports_per_fgpa']))
-        if antpol >= (self.config['n_ants_per_xaui']*2): 
+        if antpol >= (self.config['n_ants_per_xaui']*2):
             raise RuntimeError("Antenna specified (%i) is out of range (there are only %i inputs per XAUI)."%(adc,self.config['n_ants_per_xaui']*2))
         return (fpga*self.config['n_ants_per_xaui']*self.config['n_xaui_ports_per_fpga'] + xaui*self.config['n_xaui_ports_per_fpga'] + antpol/2,['x','y'][antpol%2])
 
     def get_ant_location(self, ant):
         " Returns the (fpga,xaui,xaui_ant) location for a given antenna. Antenna is integer, as are all returns."
-        if ant > self.config['n_ants']: 
+        if ant > self.config['n_ants']:
             raise RuntimeError("There is no antenna %i in this design (total %i antennas)."%(ant,self.config['n_ants']))
         target_fpga = ant/self.config['n_ants_per_xaui']/self.config['n_xaui_ports_per_fpga']
         target_xaui = ant/self.config['n_ants_per_xaui']%self.config['n_xaui_ports_per_fpga']
@@ -439,7 +475,7 @@ class Correlator:
         #    for x in range(self.config['n_xaui_ports_per_fpga']):
         #        mac,ip,port=self.get_roach_gbe_conf(start_addr,(f*self.config['n_xaui_ports_per_fpga']+x),start_port)
         #        fpga.config_10gbe_core('gbe%i'%x,mac,ip,port,arp_table)
-                
+
     def config_udp_output(self):
         self.write_int_all('gbe_out_ip_addr',self.config['rx_udp_ip'])
         self.write_int_all('gbe_out_port',self.config['rx_udp_port'])
@@ -491,7 +527,7 @@ class Correlator:
 
         done=False
         start_time=time.time()
-        while not (done and (offset>0 or circular_capture)) and ((time.time()-start_time)<wait_period): 
+        while not (done and (offset>0 or circular_capture)) and ((time.time()-start_time)<wait_period):
             addr= self.read_uint_all(dev_name+'_addr')
             done_list=[not bool(i & 0x80000000) for i in addr]
             if (done_list == [True for i in self.servers]): done=True
@@ -501,7 +537,7 @@ class Correlator:
         #print 'Addr+1:',bram_dmp['lengths']
         for f,fpga in enumerate(self.fpgas):
             if (bram_sizes[f] != fpga.read_uint(dev_name+'_addr')&0x7fffffff) or bram_sizes[f]==0:
-                #if address is still changing, then the snap block didn't finish capturing. we return empty.  
+                #if address is still changing, then the snap block didn't finish capturing. we return empty.
                 print "Looks like snap block on %s didn't finish."%self.servers[f]
                 bram_dmp['lengths'][f]=0
                 bram_dmp['offsets'][f]=0
@@ -512,9 +548,9 @@ class Correlator:
             #print 'Valids since offset trig:',self.read_uint_all(dev_name+'_tr_en_cnt')
             #print 'offsets:',bram_dmp['offsets']
         else: bram_dmp['offsets']=[0 for f in self.fpgas]
-    
+
         for f,fpga in enumerate(self.fpgas):
-            if (bram_dmp['offsets'][f] < 0):  
+            if (bram_dmp['offsets'][f] < 0):
                 raise RuntimeError('SNAP block hardware or logic failure happened. Returning no data.')
                 bram_dmp['lengths'][f]=0
                 bram_dmp['offsets'][f]=0
@@ -524,9 +560,9 @@ class Correlator:
             bram_path = dev_name+'_'+bram
             bram_dmp[bram]=[]
             for f,fpga in enumerate(self.fpgas):
-                if (bram_sizes[f] == 0): 
+                if (bram_sizes[f] == 0):
                     bram_dmp[bram].append([])
-                else: 
+                else:
                     bram_dmp[bram].append(fpga.read(bram_path,(bram_sizes[f]+1)*4))
         return bram_dmp
 
@@ -557,7 +593,7 @@ class Correlator:
 
         done=False
         start_time=time.time()
-        while not (done and (offset>0 or circular_capture)) and ((time.time()-start_time)<wait_period): 
+        while not (done and (offset>0 or circular_capture)) and ((time.time()-start_time)<wait_period):
             addr= fpga.read_uint(dev_name+'_addr')
             done=bool(addr & 0x80000000)
         bram_dmp=dict()
@@ -566,7 +602,7 @@ class Correlator:
         bram_dmp={'length':bram_size+1}
         bram_dmp['offset']=0
         if (bram_size != fpga.read_uint(dev_name+'_addr')&0x7fffffff) or bram_size==0:
-            #if address is still changing, then the snap block didn't finish capturing. we return empty.  
+            #if address is still changing, then the snap block didn't finish capturing. we return empty.
             print "Looks like snap block didn't finish."
             bram_dmp['length']=0
             bram_dmp['offset']=0
@@ -575,8 +611,8 @@ class Correlator:
         if circular_capture or (offset>=0):
             bram_dmp['offset']=fpga.read_uint(dev_name+'_tr_en_cnt') + offset - bram_size
         else: bram_dmp['offset']=0
-    
-        if (bram_dmp['offset'] < 0):  
+
+        if (bram_dmp['offset'] < 0):
             raise RuntimeError('SNAP block hardware or logic failure happened. Returning no data.')
         #if offset<0, there was a big error. this should never happen. unless you held stop high while resetting before inputting valid data during a circular capture? In any case, zero the output.
             bram_dmp['length']=0
@@ -585,16 +621,16 @@ class Correlator:
 
         for b,bram in enumerate(brams):
             bram_path = dev_name+'_'+bram
-            if (bram_size == 0): 
+            if (bram_size == 0):
                 bram_dmp[bram]=[]
-            else: 
+            else:
                 bram_dmp[bram]=(fpga.read(bram_path,(bram_size+1)*4))
         return bram_dmp
 
         for b,bram in enumerate(brams):
             bram_path = dev_name+'_'+bram
             if (addr == 0): bram_dmp[bram]=[]
-            else: 
+            else:
                 bram_dmp[bram]=(fpga.read(bram_path,(addr+1)*4))
         return bram_dmp
 
@@ -660,7 +696,7 @@ class Correlator:
         if init_coeffs == []: coeffs = self.config['eq']['eq_poly_%i%c'%(ant,pol)]
         else: coeffs=init_coeffs
         equalization = numpy.polyval(coeffs, range(self.config['n_chans']))[self.config['eq_decimation']/2::self.config['eq_decimation']]
-        start_addr=((2*ibob_ant + pol_n)*self.config['n_chans']/self.config['eq_decimation']) 
+        start_addr=((2*ibob_ant + pol_n)*self.config['n_chans']/self.config['eq_decimation'])
         if verbose_level>0:
             print '''Initialising EQ for antenna %i, polarisation %c on %s's XAUI %i (addr %i) to'''%(ant,pol,self.servers[fn],xaui,start_addr),
             for term,coeff in enumerate(coeffs):
@@ -704,7 +740,7 @@ class Correlator:
         center_freq_descriptor.add_unpack_type('uint48','u',48)
         center_freq_descriptor.set_unpack_list(['uint48'])
         center_freq = spead.SpeadOption(17, self.config['center_freq'], center_freq_descriptor)
-       
+
         bandwidth_descriptor = spead.SpeadDescriptor("bandwidth","The analogue bandwidth of the digitally processed signal in Hz.")
         bandwidth_descriptor.add_unpack_type('uint48','u',48)
         bandwidth_descriptor.set_unpack_list(['uint48'])
@@ -715,7 +751,7 @@ class Correlator:
         n_accs_descriptor.set_unpack_list(['uint48'])
         n_accs = spead.SpeadOption(21, self.config['acc_len']*self.config['xeng_acc_len'], n_accs_descriptor)
 
-        #how to do quantisation scalars? 
+        #how to do quantisation scalars?
 
         fft_shift_descriptor = spead.SpeadDescriptor("fft_shift","The FFT bitshift pattern. F-engine correlator internals.")
         fft_shift_descriptor.add_unpack_type('uint48','u',48)
@@ -788,4 +824,4 @@ class Correlator:
         s.send_data(v)
         s.send_data(v)
          # send some data
-         
+

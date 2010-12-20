@@ -1,6 +1,6 @@
 import glob
 
-__version__ = '0.4.3'
+__version__ = '0.4.4'
 
 setup_args = {
     'name': 'corr',

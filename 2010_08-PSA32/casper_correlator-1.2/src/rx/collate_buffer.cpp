@@ -258,6 +258,7 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
                     flags[((cb->nchan -1) - ch)] = cb->flagbuf[addr/2];
                     //data[2*ch] = (float) cb->buf[addr];
                     //data[2*ch+1] = (float) cb->buf[addr+1];
+                    if (i==1 && j==1 && pol==0 && (ch<20)) fprintf(stderr," (%2i,%2i, pol %i,Ch:%4i): %8i + %8ij FLAG: %i\n", i,j,pol,ch, cb->buf[addr],cb->buf[addr+1],cb->flagbuf[addr/2]);
                     //if (i ==0 && j == 0 && pol == 0 && ch > 500 && ch < 520) fprintf(stderr,"0x: Scaled Window Ch:%i, D1: %f, D2: %f\n", ch, data[2*ch], data[2*ch+1]);
                     //if (i <= 3 && j <= 3 && ch == 1 && (pol==0 || pol==1)) fprintf(stderr," (%i,%i, pol %i,Ch:%i) D1: %i, D2: %i\n", i,j,pol,ch, ((int32_t *)(pkt.data + cnt))[0], ((int32_t *)(pkt.data + cnt))[1]);
                     //if (i <= 3 && j <= 3 && ch > 500 && ch<520 && (pol==0 || pol==1)) fprintf(stderr," (%i,%i, pol %i,Ch:%i) D1: %i, D2: %i\n", i,j,pol,ch, ((int32_t *)(pkt.data + cnt))[0], ((int32_t *)(pkt.data + cnt))[1]);

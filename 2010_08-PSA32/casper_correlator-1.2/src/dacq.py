@@ -7,6 +7,11 @@ def start_uv_file(filename, aa, pols, nchan, sfreq, sdf, inttime):
     uv = a.miriad.UV(filename, status='new')
     uv._wrhd('obstype','mixed-auto-cross')
     uv._wrhd('history','CORR-DACQ: created file.\n')
+    # For now, data are always stored as scaled shorts.
+    # Once aipy is updated to allow a choice between scaled shorts and floats,
+    # the value of uv['corr'] should be set appropriately.  Set it to 'j' for
+    # shorts, 'r' for floats (aka reals).
+    uv.add_var('corr',    'a'); uv['corr'] = 'j'
     uv.add_var('telescop','a'); uv['telescop'] = 'PAPER'
     uv.add_var('operator','a'); uv['operator'] = 'PAPER'
     uv.add_var('version' ,'a'); uv['version'] = '0.0.1'

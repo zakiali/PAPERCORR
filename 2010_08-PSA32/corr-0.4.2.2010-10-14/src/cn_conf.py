@@ -64,12 +64,15 @@ class CorrConf:
             else:
                 raise RuntimeError('Error parsing server section: did not get port and ip addr for server') 
 
+        self.config['timeserver'] = self.cp.get('borphserver','timeserver')
         self.config['bitstream'] = self.cp.get('borphserver','bitstream')
 
         #get the correlator config stuff:
         self.read_int('correlator','n_chans')
         self.read_int('correlator','n_ants')
         self.read_int('correlator','fft_shift')
+        self.read_str('correlator','trig_mode')
+        self.read_str('correlator','int_trig_serial_port')
         self.read_int('correlator','acc_len')
         self.read_float('correlator','adc_clk')
         self.read_int('correlator','n_stokes')

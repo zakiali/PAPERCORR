@@ -4,6 +4,9 @@
 \n\nThis script is INCOMPLETE and UNTESTED.\n\n
 Grabs the contents of "snap_xaui" for analysis.
 '''
+
+#4/9/2011 - fixed antenna bug. Things seem to be working fine.
+
 import corr, time, numpy, pylab, struct, sys, logging
 
 
@@ -37,7 +40,10 @@ def exit_clean():
 def xaui_feng_unpack(xeng,xaui_port,bram_dump,hdr_index,pkt_len,skip_indices):
     pkt_64bit = struct.unpack('>Q',bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index)+4]+bram_dmp['bram_lsb'][(4*hdr_index):(4*hdr_index)+4])[0]
     pkt_mcnt =(pkt_64bit&((2**64)-(2**16)))>>16
-    pkt_ant  = xeng*c.config['n_xaui_ports_per_fpga']*c.config['n_ants_per_xaui'] + xaui_port*c.config['n_ants_per_xaui'] + pkt_64bit&((2**16)-1)
+    #pkt_ant  = xeng*c.config['n_xaui_ports_per_fpga']*c.config['n_ants_per_xaui'] + xaui_port*c.config['n_ants_per_xaui'] + pkt_64bit&((2**16)-1)
+    #antenna variable in antenna design is already the actual antenna number. Dont neet to correct for it.
+    pkt_ant  = pkt_64bit&((2**16)-1) 
+    #print pkt_ant
     pkt_freq = pkt_mcnt%n_chans
     sum_polQ_r = 0
     sum_polQ_i = 0
@@ -242,6 +248,21 @@ try:
     pylab.ylim((0,1))
     pylab.xlim(0,n_chans)
     pylab.xlabel('Channel')
+    
+   # pylab.figure(ant+1)
+   # ax1=pylab.subplot(211)
+   # pylab.title('Antenna %i\n"X" input rms'%ant)
+   # pylab.plot(range(0,n_chans),snap_rms_q[::-1])
+   # #pylab.plot(range(0,n_chans),snap_rms_q,'.')
+   # pylab.setp(ax1.get_xticklabels(), visible=False)
+
+   # pylab.subplot(212,sharex=ax1,sharey=ax1)
+   # pylab.title('"Y" input rms')
+   # #pylab.plot(range(0,n_chans),snap_rms_i,'.',label='ant%i'%xaui_ant)
+   # pylab.plot(range(0,n_chans),snap_rms_i[::-1])
+   # pylab.ylim((0,1))
+   # pylab.xlim(0,n_chans)
+   # pylab.xlabel('Channel')
 
     pylab.show()
 

@@ -59,7 +59,10 @@ if __name__ == '__main__':
         help='Do not begin outputting packetised data.  Default: start the output.')
     p.add_option('-v', '--verbose', dest='verbose',action='store_true', default=False, 
         help='Be verbose about errors.')
-
+    p.add_option('-t', '--test', dest='test64',action='store_true', default=False,
+        help='enable testing for 64 input correlator with 32 input hardware.')
+    p.add_option('-n', '--noise', dest='noise', type='str',
+        help ='picks out what noise sources to use.choices = "adc", "dig0", "dig1", "zero". ')
     opts, args = p.parse_args(sys.argv[1:])
 
     if args==[]:
@@ -93,6 +96,13 @@ try:
         c.prog_all()
         print 'done.'
     else: print ' Skipped programming FPGAs.'
+
+    #PUT in test mode 64 input design.
+    if opts.test64:
+        print ('''Putting in test mode for 64input design...'''),
+        sys.stdout.flush()
+        c.write_int_all('xhead_mod_mod_head',0xffffffff)
+        print 'done'
 
     # Disable 10GbE cores until the network's been setup and ARP tables have settled. Need to do a reset here too to flush buffers in the core.
     print('\n Pausing 10GbE data exchange, resetting the 10GbE cores and clearing X engine TVGs...'),
@@ -128,6 +138,9 @@ try:
     time_skt.close()
     print 'Pkt sent.'
 
+    sys.stdout.flush()
+    c.write_all_feng_ctrl(fft_shift = c.config['fft_shift'])
+    print '''fft shift is set to %i''' %c.config['fft_shift']
     # Set the Accumulation Length (number of vectors to accumulate)
     print (''' Setting the accumulation length to %i (%2.2f seconds)...'''%(c.config['acc_len'],c.config['int_time'])),
     sys.stdout.flush()
@@ -149,6 +162,37 @@ try:
             sys.stdout.flush()
             ant += c.config['n_ants_per_xaui']
     print ('''done''')
+
+    #Initialize input select on the ibob's to be ADC's. THIS IS THE DEFAULT (no options given).
+    print('''Initializing IBoB's input select mux'''),
+    for i in range(len(c.config['servers'])):
+        c.insel_ibob(0x00000000,i)
+    print('''done''')
+
+    #Select which noise sources to use if option given. If none given, then use ADC's
+    if opts.noise != None:
+        print (''' Selecting noise sources...'''),
+        if opts.noise == 'adc':
+            print(''' Selecting ADC's'''),
+            for i in range(len(c.config['servers'])):
+                c.insel_ibob(0x00000000,i)
+        elif opts.noise == 'dig0':
+            print ('''Selecting digital noise (2 kinds)'''),
+            val = [0x00000000,0x00000000,0x00000000,0x00000000]
+            for i in range(len(c.config['servers'])):
+                c.seed_ibob(val[i],i)
+                c.insel_ibob(0x12121212,i)
+        elif opts.noise == 'dig1':
+            print ('''selecting digital noise. All different.'''),
+            val = [0x11223344, 0x55667788, 0x99aabbcc, 0xddeeff00] 
+            for i in range(len(c.config['servers'])):
+                c.seed_ibob(val[i],i)
+                c.insel_ibob(0x12121212, i)
+        elif opts.noise == 'zero':
+            print ('''selecting digital zero for all'''),
+            for i in range(len(c.config['servers'])):
+                c.insel_ibob(0x33333333, i)
+        print 'done.'
 
     # Set UDP TX data port
     print (''' Setting the UDP TX data port to %i...'''%(c.config['10gbe_port'])),
@@ -185,9 +229,9 @@ try:
     else:
         for x in range(c.config['x_per_fpga']):
             for f,fpga in enumerate(c.fpgas):
-                fpga.write_int('inst_xeng_id%i'%x,x*len(c.fpgas)+f)
-
-
+                if opts.test64: fpga.write_int('inst_xeng_id%i'%x,x*8+f)
+#changed len(c.fpgas) to 8 in the above line of code
+                else: fpga.write_int('inst_xeng_id%i'%x,x*len(c.fpgas)+f)
     #print('Resetting 10GbE cores...'),
     #sys.stdout.flush()
     #c.write_all_xeng_ctrl(gbe_rst=True)
@@ -276,21 +320,27 @@ try:
     else: 
         print ('FAILURES detected!')
         exit_clean()
+    
+    print('''VACC Syncing...'''),
+    sys.stdout.flush()
+    c.vacc_resync()
+    print '''done'''
 
     print(''' Resetting error counters...'''),
     sys.stdout.flush()
+    time.sleep(5)
     c.rst_cnt()
     print '''done'''
 
     time.sleep(1)
 
-    print ''' Checking that all X engines are receiving all their packets...''',
-    sys.stdout.flush()
-    if c.check_x_miss(): print 'ok'
-    else: 
-        print ('FAILURES detected!')
-        c.check_x_miss(verbose=True)
-        exit_clean()
+    #print ''' Checking that all X engines are receiving all their packets...''',
+    #sys.stdout.flush()
+    #if c.check_x_miss(): print 'ok'
+    #else: 
+    #    print ('FAILURES detected!')
+    #    c.check_x_miss(verbose=True)
+    #    exit_clean()
 
 #    monitor()
 except KeyboardInterrupt:

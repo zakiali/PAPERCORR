@@ -60,11 +60,11 @@ def xaui_feng_unpack(xeng,xaui_port,bram_dump,hdr_index,pkt_len,skip_indices):
 
         pkt_64bit = struct.unpack('>Q',bram_dmp['bram_msb'][(4*abs_index):(4*abs_index)+4]+bram_dmp['bram_lsb'][(4*abs_index):(4*abs_index)+4])[0]
 
-        for offset in range(64,0,-16):
-            polQ_r = (pkt_64bit & ((2**(offset+16)) - (2**(offset+12))))>>(offset+12)
-            polQ_i = (pkt_64bit & ((2**(offset+12)) - (2**(offset+8))))>>(offset+8)
-            polI_r = (pkt_64bit & ((2**(offset+8)) - (2**(offset+4))))>>(offset+4)
-            polI_i = (pkt_64bit & ((2**(offset+4)) - (2**(offset))))>>offset
+        for offset in range(48,-16,-16):
+            polQ_r = (pkt_64bit >> (offset + 12)) & 0xf
+            polQ_i = (pkt_64bit >> (offset +  8)) & 0xf
+            polI_r = (pkt_64bit >> (offset +  4)) & 0xf
+            polI_i = (pkt_64bit >> (offset     )) & 0xf
 
             #square each number and then sum it
             sum_polQ_r += (float(((numpy.int8(polQ_r << 4)>> 4)))/(2**binary_point))**2

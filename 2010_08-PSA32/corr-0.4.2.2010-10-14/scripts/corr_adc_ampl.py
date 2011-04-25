@@ -90,11 +90,13 @@ try:
                         offset_of_interest = (2*a + p)
                         adcs[f][x][a]['pol_%s'%p]=adcs[f][x]['unpacked_data'][offset_of_interest]
                         #calculate RMS values:
+                        #should be 2**(adc_bits-1)
                         adcs[f][x][a]['pol_%s_rms'%(p)] = (numpy.sqrt(adcs[f][x]['unpacked_data'][offset_of_interest]/(adc_levels_acc_len))/(2**adc_bits))
                         #calculate bits used:
-                        if adcs[f][x][a]['pol_%s'%(p)] == 0:
+                        if adcs[f][x][a]['pol_%s_rms'%(p)] == 0:
                             adcs[f][x][a]['pol_%s_bits_used'%(p)] = 0        
                         else:    
+                        #should be 2**(adc_bits-1)
                             adcs[f][x][a]['pol_%s_bits_used'%(p)] = (numpy.log2(adcs[f][x][a]['pol_%s_rms'%(p)] * (2**(adc_bits))))
 
 
@@ -113,7 +115,7 @@ try:
                     for p,pol in enumerate(pols):
                         ant,ignore_pol = c.get_ant_index(f,x,a*2)
                         #print adcs[f][x][a]
-                        print 'ADC%i pol %s (ant %i%s): %.3f (%2.2f bits used)'%(a,pol,ant,pol, adcs[f][x][a]['pol_%s_rms'%(p)],adcs[f][x][a]['pol_%s_bits_used'%(p)])
+                        print 'ADC%i pol %s (ant %i%s): %.3f (%2.2f bits used) %.3f'%(a,pol,ant,pol, adcs[f][x][a]['pol_%s_rms'%(p)],adcs[f][x][a]['pol_%s_bits_used'%(p)],adcs[f][x][a]['pol_%s_rms'%(p)]*(2**adc_bits))
                 print '--------------------'
 
 except KeyboardInterrupt:

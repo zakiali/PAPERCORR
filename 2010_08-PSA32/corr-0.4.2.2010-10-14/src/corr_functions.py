@@ -71,6 +71,35 @@ class Correlator:
         for f,fpga in enumerate(self.fpgas):
             fpga.write_int(register,value)
 
+    def vacc_resync(self):
+        """Syncs up vector accumulators."""
+        xclients = self.fpgas
+        xaui_sync_mcnts = [struct.unpack('>I',x.read('xaui_sync_mcnt0',4))[0] for x in xclients]
+        xaui_unsynced = [x - xaui_sync_mcnts[0] != 0 for x in xaui_sync_mcnts]
+
+        if False in xaui_unsynced == True:
+            raise 'Xaui Sync Bad'
+
+        #get latest mcnt for first roach.
+        mcnt = (struct.unpack('>I', xclients[0].read('mcount_msw',4))[0]<<32) + struct.unpack('>I', xclients[0].read('mcount_lsw',4))[0]
+
+        #mask of 20 lower bits and increments by 2**20
+        load_mcnt = (mcnt & ~(0xfffff)) + (1 << 20)
+        vacc_time_msw, vacc_time_lsw = divmod(load_mcnt, (1<<32))
+
+        # Load roaches with vacc_time (not sure if it's necessary to load
+        # vacc_time_msw with msb=0 then reload with msb=1 rather than just load
+        # with msb=1, but that's what Jason's code snippet does, so it is
+        # replicated here "just in case".  It is definitely important to load
+        # vacc_time_lsw *before* setting the arm bit (i.e. msb) of vacc_time_msw!
+        [x.write('vacc_time_msw' , struct.pack('>I', vacc_time_msw)) for x in xclients]
+        [x.write('vacc_time_lsw' , struct.pack('>I', vacc_time_lsw)) for x in xclients]
+        [x.write('vacc_time_msw' , struct.pack('>I', vacc_time_msw + (1<<31))) for x in xclients]
+        [x.write('vacc_time_msw' , struct.pack('>I', vacc_time_msw)) for x in xclients]
+
+        print 'loaded vacc_time_msw = %d, vacc_time_lsw = %d' %(vacc_time_msw, vacc_time_lsw) 
+        print 'current mcount_msw = %d, mcount_lsw = %d' %(struct.unpack('>I', xclients[0].read('mcount_msw', 4))[0], struct.unpack('>I',xclients[0].read('mcount_lsw', 4))[0])
+
     def write_all_ibobs(self,addr,data):
         """Writes a value to all IBOBs through the Xengine, across XAUI.
         addr maps to the 32 MSbs of the XAUI link.
@@ -122,6 +151,14 @@ class Correlator:
         #WORKING 2009-12-01
         value = gbe_out_enable<<16 | loopback_mux_rst<<10 | gbe_disable<<9 | cnt_rst<<8 | gbe_rst<<15 | vacc_rst<<0
         self.write_int_all('ctrl',value)
+
+    def seed_ibob(self, val, xid, addr = 8196):
+        """Writes to seed values for Fengine digital noise sources"""
+        self.write_ibob(xid,0,addr,val)
+
+    def insel_ibob(self, val, xid, addr = 8194):
+        """selects what noise source to use:0=adc, 1+2 = digital noise, 3 = zero """
+        self.write_ibob(xid,0,addr,val)
 
     def read_all_xeng_ctrl(self):
         """Reads and decodes the values from all the Xengine control registers."""

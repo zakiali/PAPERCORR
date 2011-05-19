@@ -65,6 +65,7 @@ try:
         rx_cnt     = [c.read_uint_all('rx_cnt%i'%(x)) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
         gbe_rx_cnt = [c.read_uint_all('gbe_rx_cnt%i'%x) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
         gbe_rx_err_cnt = [c.read_uint_all('gbe_rx_err_cnt%i'%x) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
+        gbe_rx_down = [c.read_uint_all('gbe_rx_down') for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
         rx_err_cnt = [c.read_uint_all('rx_err_cnt%i'%x) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
         loop_cnt   = [c.read_uint_all('loop_cnt%i'%x) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
         loop_err_cnt = [c.read_uint_all('loop_err_cnt%i'%x) for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga))]
@@ -97,6 +98,7 @@ try:
 
             for x in range(min(n_xaui_ports_per_fpga,n_xeng_per_fpga)):
                 print "\t10GbE%i        RX cnt: %10i    Errors: %10i"%(x,gbe_rx_cnt[x][fn],gbe_rx_err_cnt[x][fn])
+                print "\t10Gbe%i        RX DOWN:         Errors: %10i"   %(x,gbe_rx_down[x][fn])
                 print '\tLoopback%i        cnt: %10i    Ovrflw: %10i'%(x,loop_cnt[x][fn],loop_err_cnt[x][fn])
                 print "\tLoopback_mux%i    cnt: %10i    Errors: %10i"%(x,rx_cnt[x][fn],rx_err_cnt[x][fn])
                 print '\t  Loopback%i     mcnt: %6i'%(x,loopmcnt[x][fn])

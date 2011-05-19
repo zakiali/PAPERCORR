@@ -96,7 +96,7 @@ try:
         if unpack_length>0:
             #unpack length is multiplied by two because of the "short" fmt(h).
             bram_data.append(struct.unpack('>%ih'%(unpack_length*2), bram_dmp[brams[0]][f]))
-            print bram_data
+            #print bram_data
         else:
             print ' Got no data back for %s.'%c.servers[f]
             bram_data.append([])

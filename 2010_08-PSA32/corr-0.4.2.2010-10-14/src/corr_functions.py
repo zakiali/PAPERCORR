@@ -23,7 +23,14 @@ Revisions:\n
 \n
 
 """
-import corr, time, sys, numpy, os, logging, katcp, struct
+import corr, time, sys, numpy, os, logging, katcp, struct, pylibmc
+
+FENG_CTL_ADDR = 8192
+ANT_BASE_ADDR = 8193
+INSEL_ADDR    = 8194
+DELAY_ADDR    = 8195
+SEED_ADDR     = 8196
+
 
 class Correlator:
     def __init__(self, config_file,log_handler):
@@ -41,6 +48,9 @@ class Correlator:
                 if (conn_check[i] == False):
                     fails.append(self.servers[i] + ',')
             raise RuntimeError("Connection to %s failed."%''.join(fails))
+        #At the moment we only have one server, which is our receive computer. Later we can add the servers to the conf file. 
+        self.mcach = pylibmc.Client([self.config['udp_rx_ip']])
+        self.addresses = {FENG_CTL_ADDR : 'ctrl', ANT_BASE_ADDR : 'antbase', INSEL_ADDR : 'insel', DELAY_ADDR : 'delay', SEED_ADDR : 'seed'}
 
         #self.speadstream = spead.SpeadStream(self.config['rx_udp_ip_str'],self.config['rx_udp_port'],"corr_n","A packetised correlator SPEAD stream.")
 
@@ -70,6 +80,10 @@ class Correlator:
         #TESTED OK
         for f,fpga in enumerate(self.fpgas):
             fpga.write_int(register,value)
+
+    def write2cacheF(self,addr,value,xeng):
+        """Writes to the memory cache daemon."""
+        self.mcache.set('px%d:%s '%(xeng, self.addresses.get(addr)), '0x%08x' %value)
 
     def vacc_resync(self):
         """Syncs up vector accumulators."""
@@ -135,6 +149,7 @@ class Correlator:
         fpga.write_int('ibob_addr%i'%xaui_idx,(2**32)-1)
         fpga.write_int('ibob_data%i'%xaui_idx,data)
         fpga.write_int('ibob_addr%i'%xaui_idx,addr)
+        self.write2cacheF(addr,data,fpga_idx+1)
 
 
 
@@ -144,7 +159,9 @@ class Correlator:
         #Updated 2010-02-15 for new FFT TVG
         #WORKING 2009-07-01
         value = use_sram_tvg<<19 | use_fft_tvg1<<21 | use_fft_tvg2<<22 | arm_rst<<17 | sync_rst<<16 | fft_shift
-        return self.write_all_ibobs(addr=8192,data=value)
+        for i in range(len(self.fpgas)):
+            self.write2cacheF(FENG_CTL_ADDR,value,i+1)
+        return self.write_all_ibobs(addr=FENG_CTL_ADDR,data=value)
 
     def write_all_xeng_ctrl(self,loopback_mux_rst=False, gbe_out_enable=False, gbe_disable=False, cnt_rst=False, gbe_rst=False, vacc_rst=False):
         """Writes a value to all the Xengine control registers."""
@@ -152,12 +169,16 @@ class Correlator:
         value = gbe_out_enable<<16 | loopback_mux_rst<<10 | gbe_disable<<9 | cnt_rst<<8 | gbe_rst<<15 | vacc_rst<<0
         self.write_int_all('ctrl',value)
 
-    def seed_ibob(self, val, xid, addr = 8196):
+    def seed_ibob(self, val, xid, addr = SEED_ADDR):
         """Writes to seed values for Fengine digital noise sources"""
         self.write_ibob(xid,0,addr,val)
 
-    def insel_ibob(self, val, xid, addr = 8194):
+    def insel_ibob(self, val, xid, addr = INSEL_ADDR):
         """selects what noise source to use:0=adc, 1+2 = digital noise, 3 = zero """
+        self.write_ibob(xid,0,addr,val)
+
+    def delay_ibob(self, val, xid, addr = DELAY_ADDR)
+        """selects the number of sample delays (up to 16) for an input in an ibob""" 
         self.write_ibob(xid,0,addr,val)
 
     def read_all_xeng_ctrl(self):
@@ -747,6 +768,7 @@ class Correlator:
                 print 'Setting EQ at %i to %f'%(chan+start_addr,int(gain))
             fpga.write_int('ibob_data%i'%(xaui),int(gain))
             fpga.write_int('ibob_addr%i'%(xaui),(chan+start_addr))
+            self.mcache.set('px%d:eq:%d:%d'%(fpga_n,(ant*2 + poln),chan),val)
 
     def issue_spead_metadata(self):
         """ Issues the SPEAD metadata packets containing the payload and options descriptors and unpack sequences."""

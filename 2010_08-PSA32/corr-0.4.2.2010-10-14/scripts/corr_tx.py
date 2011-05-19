@@ -7,6 +7,12 @@ Author: Jason Manley
 Date: 2010/01/20
 
 Revisions:
+2011-05-05  ZA  Added read out of corr_read_missing registers and saved 
+                to memcachd.
+    
+2011-04-25  ZA  Start changes to use memcached python library to read out 
+                corr_read missing stuff and adc amplitudes etc...
+
 2010-02-24  JRM Added support for multiple X engines per FPGA.
                 Now prints time difference between integration dumps.
 
@@ -24,7 +30,7 @@ old stuff:
 2007-08-29  JRM Changed some endian-ness handling for packet decoding
 """
 
-import time, os, socket, struct, sys
+import time, os, socket, struct, sys, pylibmc
 
 #  ____                          _   _     ____            _        _   
 # / ___|__ _ ___ _ __   ___ _ __| \ | |   |  _ \ __ _  ___| | _____| |_ 
@@ -113,6 +119,11 @@ class CorrTX:
         self.payload_len=payload_len
         self.verbose=verbose
         self.x_per_fpga = x_per_fpga
+        self.mcache = pylibmc.Client([ip])
+        self.corr_read_missing = self.corr_read_missing_init(pid)
+        self.ant_levels = open('/proc/%i/hw/ioreg/ant_levels'%(pid),'r')
+        self.ant_levels_mean = open('/proc/%i/hw/ioreg/ant_levels_mean'%(pid),'r')
+
 
         self.snap_addr=[]
         self.snap_bram=[]
@@ -138,6 +149,55 @@ class CorrTX:
         self.timestamp_rnd=timestamp_rnd
         self._tx()
 
+    def corr_read_missing_init(self, pid, n_xaui = 1, x_per_fpga = 2):
+        corr_read_missing = { 'xaui_errors' : [open('/proc/%i/hw/ioreg/xaui_err%i'%(pid,x),'r') for x in range(n_xaui)],
+        'xaui_rx_cnt' : [open('/proc/%i/hw/ioreg/xaui_cnt%i'%(pid,x),'r') for x in range(n_xaui)],
+        'gbe_tx_cnt' : [open('/proc/%i/hw/ioreg/gbe_tx_cnt%i'%(pid,x),'r') for x in range(n_xaui)],
+        'gbe_tx_err' : [open('/proc/%i/hw/ioreg/gbe_tx_err_cnt%i'%(pid,x),'r') for x in range(n_xaui)],
+        'rx_cnt' : [open('/proc/%i/hw/ioreg/rx_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'gbe_rx_cnt' : [open('/proc/%i/hw/ioreg/gbe_rx_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'gbe_rx_err_cnt' : [open('/proc/%i/hw/ioreg/gbe_rx_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'rx_err_cnt' : [open('/proc/%i/hw/ioreg/rx_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'loop_cnt' : [open('/proc/%i/hw/ioreg/loop_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'loop_error_cnt' : [open('/proc/%i/hw/ioreg/loop_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'mcnts' : [open('/proc/%i/hw/ioreg/loopback_mux%i_mcnt'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'x_cnt' : [open('/proc/%i/hw/ioreg/pkt_reord_cnt%i'%(pid,x),'r') for x in range(x_per_fpga)],
+        'x_miss' : [open('/proc/%i/hw/ioreg/pkt_reord_err%i'%(pid,x),'r') for x in range(x_per_fpga)],
+        'last_miss_ant' : [open('/proc/%i/hw/ioreg/last_missing_ant%i'%(pid,x),'r') for x in range(x_per_fpga)],
+        'vacc_cnt' : [open('/proc/%i/hw/ioreg/vacc_cnt%i'%(pid,x),'r') for x in range(x_per_fpga)],
+        'vacc_err_cnt' : [open('/proc/%i/hw/ioreg/vacc_err_cnt%i'%(pid,x),'r') for x in range(x_per_fpga)]}
+        return corr_read_missing
+    
+    def get_corr_read_missing(self,corr_read_dictionary = {}): 
+        corr_read2write = {}
+        print 'Reading corr_read_missing registers'
+        for key in corr_read_dictionary.keys():
+            corr_read2write['px%d:'%(self.xeng[0]+1)+key] = []
+            for i in range(len(corr_read_dictionary[key])):
+                corr_read_dictionary[key][i].flush()
+                corr_read_dictionary[key][i].seek(0)
+                corr_read_dictionary[key][i].flush()
+                corr_read2write['px%d:'%(self.xeng[0]+1)+key].append(corr_read_dictionary[key][i].read())
+        print 'Saving corr_read_missing registers to memcached'
+        self.mcache.set_multi(corr_read2write)     
+        print 'done'
+        
+    def adc_amplitudes(self):
+        #4bytes for 1 input. There are 8 inputs.
+        mem_size = 2 * 4 * 4   
+        print 'getting adc data'
+        self.ant_levels.flush()
+        self.ant_levels.seek(0)
+        self.ant_levels.flush()
+        adc = self.ant_levels.read(mem_size)
+        self.ant_levels_mean.flush()
+        self.ant_levels_mean.seek(0)
+        self.ant_levels_mean.flush()
+        adc_mean = self.ant_levels_mean.read(mem_size)
+        print 'saving adc data into memcache'
+        self.mcache.set_multi({'px%d:adc_sum_squares'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
+        print 'done'
+    
     def read_addr(self,xeng):
         self.snap_addr[xeng].flush()
         self.snap_addr[xeng].seek(0)
@@ -247,14 +307,26 @@ class CorrTX:
             data.append([])
             self.snap_get_new(xnum)
             #print 'Requested first snap grab for xeng %i'%xnum
-
+        
+        #t1 = time.time()
+        #self.get_corr_read_missing(self.corr_read_missing)
+        #print 'time to get corr_read_missing data and save in memcached = ', time.time() - t1
         while True:
+            t_fullspec_start = time.time()
             # Wait for data to become available
             num = 0
+            cnt=0
             while num == 0:
+                if cnt == 0:
+                    self.adc_amplitudes()
                 time.sleep(.1)
                 num = self.read_addr(0)
+                cnt+= 1
+                if cnt == 5:
+                    self.get_corr_read_missing(self.corr_read_missing)
+                print cnt    
 
+            t_fullspec_start_2 = time.time()
             while sum(complete)<self.x_per_fpga:
                 for xnum in range(self.x_per_fpga):
                     addr = self.read_addr(xnum)
@@ -277,6 +349,10 @@ class CorrTX:
                 print '[%6i] Grabbed %i vectors for X engine %i with timestamp %i (diff %4.2fs).'%(n_integrations,int_xeng_vectors[xnum], self.xeng[xnum], rounded_timestamp[xnum],realtime_diff[xnum])
                 data[xnum] = ''.join(data[xnum])
 
+                print 'time to get all data = ', time.time() - t_fullspec_start
+                print 'time to get data - sleep =', time.time() - t_fullspec_start_2
+
+
                 #n_bls=16*17/2
                 #bls=2
                 #for chan in range(20):
@@ -293,6 +369,9 @@ class CorrTX:
                 complete[xnum]=0
                 int_xeng_vectors[xnum]=0
             n_integrations += 1
+            if n_integrations == 1:
+                self.mcache.set('px%d:integration'%(self.xeng[0]+1),0)
+            self.mcache.incr('px%d:integration'%(self.xeng[0]+1))
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -312,6 +391,8 @@ if __name__ == '__main__':
         help='The length in bytes of each packet (data or payload only). Default 4096')
     p.add_option('-t', '--timestamp_rounding', dest='timestamp_rounding', type='int', default=1024*1024,
         help='Round-off the timestamp to the nearest given value. Default is 1024*1024.')
+    p.add_option('-n', '--n_xaui', dest='n_xaui', type=int, default=1,
+        help='Number of xaui ports used per fpga.')
     opts, args = p.parse_args(sys.argv[1:])
     if len(args) < 1: 
         print 'Please specify PID of Xengine BORPH process.'

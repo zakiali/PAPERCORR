@@ -218,8 +218,8 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
     pkt_t = cb->sync_time*ADC_RATE  + (uint64_t)(pkt.timestamp * TIME_SCALE); //pkt_t is in ADC samples since unix epoch
     pkt_ts = pkt_t /ADC_RATE; //pkt_ts is in seconds since unix epoch
 
-    //fprintf(stderr, "Raw packet timestamp: %lu\n", pkt.timestamp);
-    //fprintf(stderr, "Packet timestamp: %lu\n", pkt_t);
+    fprintf(stderr, "Raw packet timestamp: %lu\n", pkt.timestamp);
+    fprintf(stderr, "Packet timestamp: %lu\n", pkt_t);
 
     if (cb->cur_t == NOTIME) {
         // Case for not having locked onto any integration yet

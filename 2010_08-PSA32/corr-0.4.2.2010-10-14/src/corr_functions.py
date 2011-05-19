@@ -768,7 +768,7 @@ class Correlator:
                 print 'Setting EQ at %i to %f'%(chan+start_addr,int(gain))
             fpga.write_int('ibob_data%i'%(xaui),int(gain))
             fpga.write_int('ibob_addr%i'%(xaui),(chan+start_addr))
-            self.mcache.set('px%i:eq:%i:%i'%(fpga_n,ant*2+pol_n,chan),gain)
+            self.mcache.set('px%i:eq:%i:%i'%(fpga_n+1,(ant*2+pol_n)%8,chan),gain)
 
     def issue_spead_metadata(self):
         """ Issues the SPEAD metadata packets containing the payload and options descriptors and unpack sequences."""

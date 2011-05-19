@@ -49,7 +49,7 @@ class Correlator:
                     fails.append(self.servers[i] + ',')
             raise RuntimeError("Connection to %s failed."%''.join(fails))
         #At the moment we only have one server, which is our receive computer. Later we can add the servers to the conf file. 
-        self.mcach = pylibmc.Client([self.config['udp_rx_ip']])
+        self.mcache = pylibmc.Client([self.config['rx_udp_ip_str']])
         self.addresses = {FENG_CTL_ADDR : 'ctrl', ANT_BASE_ADDR : 'antbase', INSEL_ADDR : 'insel', DELAY_ADDR : 'delay', SEED_ADDR : 'seed'}
 
         #self.speadstream = spead.SpeadStream(self.config['rx_udp_ip_str'],self.config['rx_udp_port'],"corr_n","A packetised correlator SPEAD stream.")
@@ -169,15 +169,15 @@ class Correlator:
         value = gbe_out_enable<<16 | loopback_mux_rst<<10 | gbe_disable<<9 | cnt_rst<<8 | gbe_rst<<15 | vacc_rst<<0
         self.write_int_all('ctrl',value)
 
-    def seed_ibob(self, val, xid, addr = SEED_ADDR):
+    def seed_ibob(self, val, xid, addr=SEED_ADDR):
         """Writes to seed values for Fengine digital noise sources"""
         self.write_ibob(xid,0,addr,val)
 
-    def insel_ibob(self, val, xid, addr = INSEL_ADDR):
+    def insel_ibob(self, val, xid, addr=INSEL_ADDR):
         """selects what noise source to use:0=adc, 1+2 = digital noise, 3 = zero """
         self.write_ibob(xid,0,addr,val)
 
-    def delay_ibob(self, val, xid, addr = DELAY_ADDR)
+    def delay_ibob(self, val, xid, addr=DELAY_ADDR):
         """selects the number of sample delays (up to 16) for an input in an ibob""" 
         self.write_ibob(xid,0,addr,val)
 
@@ -768,7 +768,7 @@ class Correlator:
                 print 'Setting EQ at %i to %f'%(chan+start_addr,int(gain))
             fpga.write_int('ibob_data%i'%(xaui),int(gain))
             fpga.write_int('ibob_addr%i'%(xaui),(chan+start_addr))
-            self.mcache.set('px%d:eq:%d:%d'%(fpga_n,(ant*2 + poln),chan),val)
+            self.mcache.set('px%i:eq:%i:%i'%(fpga_n,ant*2+pol_n,chan),gain)
 
     def issue_spead_metadata(self):
         """ Issues the SPEAD metadata packets containing the payload and options descriptors and unpack sequences."""

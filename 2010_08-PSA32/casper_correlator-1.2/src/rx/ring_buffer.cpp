@@ -15,7 +15,7 @@ RING_BUFFER *ring_buffer_create(size_t item_count, size_t slot_size) {
 
 	// create list items
 	RING_ITEM *head_item = (RING_ITEM *)calloc(item_count, sizeof(RING_ITEM));
-	int i;
+	size_t i;
 	for(i=0; i < item_count; i++) {
 		RING_ITEM *this_item = &head_item[i];
 		RING_ITEM *next_item = &head_item[(i + 1) % item_count];
@@ -49,7 +49,7 @@ void ring_buffer_delete(RING_BUFFER *rb) {
 	// delete list items
 	RING_ITEM *head_item = rb->list_ptr;
 	size_t item_count = rb->list_length;
-	int i;
+	size_t i;
 	for(i=0; i<item_count; i++)
 	{
 		RING_ITEM *this_item = &head_item[i];

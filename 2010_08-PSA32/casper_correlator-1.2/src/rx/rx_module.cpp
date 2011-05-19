@@ -96,7 +96,7 @@ static PyObject * CorrPktObject_unpack_header(CorrPktObject *self,
     try {
         unpack_header(&(self->pkt), data);
     } catch (PacketError &e) {
-        PyErr_Format(PyExc_ValueError, e.get_message());
+        PyErr_Format(PyExc_ValueError, "%s", e.get_message());
         return NULL;
     }
     Py_INCREF(Py_None);
@@ -114,7 +114,7 @@ static PyObject * CorrPktObject_unpack_data(CorrPktObject *self,
     try {
         unpack_data(&(self->pkt), data);
     } catch (PacketError &e) {
-        PyErr_Format(PyExc_ValueError, e.get_message());
+        PyErr_Format(PyExc_ValueError, "%s", e.get_message());
         return NULL;
     }
     Py_INCREF(Py_None);
@@ -132,7 +132,7 @@ static PyObject * CorrPktObject_unpack(CorrPktObject *self,
     try {
         unpack(&(self->pkt), data);
     } catch (PacketError &e) {
-        PyErr_Format(PyExc_ValueError, e.get_message());
+        PyErr_Format(PyExc_ValueError, "%s", e.get_message());
         return NULL;
     }
     Py_INCREF(Py_None);
@@ -323,7 +323,7 @@ static PyObject * ColBufObject_collate_packet(ColBufObject *self,
     try {
         rv = collate_packet(&(self->cb), pkt->pkt);
     } catch (PacketError &e) {
-        PyErr_Format(PyExc_ValueError, e.get_message());
+        PyErr_Format(PyExc_ValueError, "%s", e.get_message());
         return NULL;
     }
     // If rv == 1, then we have a Python callback that raised an exception
@@ -553,7 +553,7 @@ int bs_collatebuffer_callback(char *data, size_t size, void *userdata) {
     try {
         unpack(&pkt, data);
     } catch (PacketError &e) {
-        fprintf(stderr, e.get_message());
+        fprintf(stderr, "%s\n", e.get_message());
         return 1;
     }
     if (pkt.sync_time > 0) {

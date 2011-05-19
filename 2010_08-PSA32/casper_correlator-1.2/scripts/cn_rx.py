@@ -5,16 +5,17 @@ import casper_correlator,corr,ephem,aipy,numpy,sys
 if sys.argv[1:]==[]:
     print 'Please specify n for n-input correlator.'
     exit()      
-args = sys.argv[1:]
-nants = int(args[0])
-port = 7148
-n_chans=2048
-bandwidth = 0.1
-sdf = 4.8828125e-05 #bandwidth /n_chans in GHz
-sfreq = 0.1
+lh=corr.log_handlers.DebugLogHandler()
+c=corr.corr_functions.Correlator(sys.argv[1],lh)
+nants = c.config['n_ants']
+port = c.config['rx_udp_port']
+n_chans = c.config['n_chans']
+bandwidth = c.config['adc_clk']/2 # GHz
+sdf = bandwidth/n_chans
+sfreq = bandwidth # Second Nyquist zone
 location=0,0,0
-acc_len = 2048 * 128 
-int_time = 2*n_chans*acc_len/200e6 #integration time in seconds
+acc_len = c.config['acc_len'] * c.config['xeng_acc_len']
+int_time = 2*n_chans*acc_len/(bandwidth*2*1e9) #integration time in seconds
 #acc_len = 1 
  # incoming data divided by this number for correct scaling
 t_per_file=ephem.minute*10

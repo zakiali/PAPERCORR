@@ -148,7 +148,10 @@ socket_t setup_network_listener(short port) {
 
     // create a new UDP socket descriptor
     sock = socket(PF_INET, SOCK_DGRAM, 0);
-    if (sock == -1) return -1;
+    if (sock == -1) {
+        perror(__FILE__ " socket");
+        return -1;
+    }
 
     // initialize local address struct
     my_addr.sin_family = AF_INET; // host byte order
@@ -157,7 +160,10 @@ socket_t setup_network_listener(short port) {
     memset(my_addr.sin_zero, 0, sizeof(my_addr.sin_zero));
 
     // bind socket to local address
-    if (bind(sock, (SA *)&my_addr, sizeof(my_addr)) == -1) return -1;
+    if (bind(sock, (SA *)&my_addr, sizeof(my_addr)) == -1){ 
+        perror(__FILE__ " bind" );
+        return -1;
+    }   
 
     // prevent "address already in use" errors
     const int on = 1;

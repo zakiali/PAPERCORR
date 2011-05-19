@@ -83,8 +83,8 @@ class Correlator:
 
     def write2cacheF(self,addr,value,xeng):
         """Writes to the memory cache daemon."""
-        if addr==ANTBASE_ADDR:self.mcache.set('px%d:%s '%(xeng, self.addresses.get(addr)), str(value))
-        self.mcache.set('px%d:%s '%(xeng, self.addresses.get(addr)), '0x%08x' %value)
+        if addr==ANT_BASE_ADDR:self.mcache.set('px%d:%s '%(xeng, self.addresses.get(addr)), str(value))
+        else:self.mcache.set('px%d:%s '%(xeng, self.addresses.get(addr)), '0x%08x' %value)
 
 
     def vacc_resync(self):

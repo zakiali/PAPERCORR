@@ -120,11 +120,24 @@ class CorrTX:
         self.verbose=verbose
         self.x_per_fpga = x_per_fpga
         self.mcache = pylibmc.Client([ip])
+
         self.corr_read_missing = self.corr_read_missing_init(pid)
+
         self.ant_levels = open('/proc/%i/hw/ioreg/ant_levels'%(pid),'r')
         self.ant_levels_mean = open('/proc/%i/hw/ioreg/ant_levels_mean'%(pid),'r')
+        self.adc_trigger = open('/proc/%i/hw/ioreg/adc_level_start'%(pid),'w')
 
-
+        self.snap_xaui_trig_offset = open('/proc/%i/hw/ioreg/snap_xaui0_trig_offset'%(pid),'w')
+        self.snap_xaui_ctrl = open('/proc/%i/hw/ioreg/snap_xaui0_ctrl'%(pid),'w')
+        self.snap_xaui_oob = open('/proc/%i/hw/ioreg/snap_xaui0_bram_oob'%(pid), 'r')
+        self.snap_xaui_msb = open('/proc/%i/hw/ioreg/snap_xaui0_bram_msb'%(pid), 'r')
+        self.snap_xaui_lsb = open('/proc/%i/hw/ioreg/snap_xaui0_bram_lsb'%(pid), 'r')
+        self.snap_xaui_addr = open('/proc/%i/hw/ioreg/snap_xaui0_addr'%(pid), 'r')
+        self.freq_ant = {}
+        for i in range(2048):
+            self.freq_ant[i] = []
+        self.finished_freq = []
+        
         self.snap_addr=[]
         self.snap_bram=[]
         self.snap_en=[]
@@ -157,6 +170,7 @@ class CorrTX:
         'rx_cnt' : [open('/proc/%i/hw/ioreg/rx_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
         'gbe_rx_cnt' : [open('/proc/%i/hw/ioreg/gbe_rx_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
         'gbe_rx_err_cnt' : [open('/proc/%i/hw/ioreg/gbe_rx_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
+        'gbe_rx_down' : [open('/proc/%i/hw/ioreg/gbe_rx_down'%(pid),'r') for x in range(min(n_xaui, x_per_fpga))],
         'rx_err_cnt' : [open('/proc/%i/hw/ioreg/rx_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
         'loop_cnt' : [open('/proc/%i/hw/ioreg/loop_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
         'loop_error_cnt' : [open('/proc/%i/hw/ioreg/loop_err_cnt%i'%(pid,x),'r') for x in range(min(n_xaui,x_per_fpga))],
@@ -185,7 +199,15 @@ class CorrTX:
     def adc_amplitudes(self):
         #4bytes for 1 input. There are 8 inputs.
         mem_size = 2 * 4 * 4   
-        print 'getting adc data'
+        print 'getting adc data,triggering adc level snap'
+        self.adc_trigger.flush()
+        self.adc_trigger.seek(0)
+        self.adc_trigger.write(struct.pack('I',1))
+        self.adc_trigger.flush()
+        self.adc_trigger.seek(0)
+        self.adc_trigger.write(struct.pack('I',0))
+        self.adc_trigger.flush()
+        time.sleep(.0005)
         self.ant_levels.flush()
         self.ant_levels.seek(0)
         self.ant_levels.flush()
@@ -196,8 +218,104 @@ class CorrTX:
         adc_mean = self.ant_levels_mean.read(mem_size)
         print 'saving adc data into memcache'
         self.mcache.set_multi({'px%d:adc_sum_squares'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
+        print 'px%d:adc_sum_squares'%(self.xeng[0]+1)
         print 'done'
-    
+
+    def snap_xaui_ram(self,offset=-1, wait = 1):
+        if offset >=0:
+            print offset
+            self.snap_xaui_trig_offset.flush()
+            self.snap_xaui_trig_offset.seek(0)
+            self.snap_xaui_trig_offset.write(struct.pack('I',offset))
+            self.snap_xaui_trig_offset.flush()
+            
+        self.snap_xaui_ctrl.flush()
+        self.snap_xaui_ctrl.seek(0)
+        self.snap_xaui_ctrl.write(struct.pack('I',0))
+        self.snap_xaui_ctrl.flush()
+        self.snap_xaui_ctrl.seek(0)
+        self.snap_xaui_ctrl.write(struct.pack('I',1))
+        self.snap_xaui_ctrl.flush()
+        time.sleep(wait)
+        done = False
+        start_time = time.time()
+        while not (done and (offset > 0)) and ((time.time() - start_time) < wait):
+            print 'not done'
+            self.snap_xaui_addr.seek(0)
+            addr = struct.unpack('I',self.snap_xaui_addr.read())[0]
+            print addr
+            done = bool(addr & 0x80000000)
+        bram_dmp = dict()
+        bram_size = (addr&0x7fffffff)
+        bram_dmp = {'length':bram_size + 1}
+        bram_dmp['offset'] = offset
+        self.snap_xaui_addr.seek(0)
+        if addr == struct.unpack('I',self.snap_xaui_addr.read())[0]:
+            print 'In data read loop'
+            #begin read out of data.
+            self.snap_xaui_oob.seek(0)
+            bram_dmp['oob_data'] = self.snap_xaui_oob.read((bram_size+1)*4)
+            self.snap_xaui_lsb.seek(0) 
+            bram_dmp['lsb_data'] = self.snap_xaui_lsb.read((bram_size+1)*4)
+            self.snap_xaui_msb.seek(0) 
+            bram_dmp['msb_data'] = self.snap_xaui_msb.read((bram_size+1)*4)
+        else: print addr,struct.unpack('I',self.snap_xaui_addr.read())     
+        print bram_dmp.keys()
+        return bram_dmp 
+        
+    def xaui_unpack(self,bram_dmp, hdr_index,pkt_len,skip_indices,mcache):
+        pkt_64bit_hdr = struct.unpack('Q', bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index)+4] + bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index+4)])[0] 
+        pkt_mcnt = pkt_64bit_hdr >>16
+        pkt_ant = pkt_64bit_hdr & 0xffff
+        pkt_freq = pkt_mcnt%2048 #mcnt % nchans
+        raw_xaui_data=''
+        for pkt_index in range(1,(pkt_len)):
+            abs_index = hdr_index + pkt_index
+            if skip_indices.count(abs_index)>1:continue
+
+            raw_xaui_data += bram_dmp['msb_data'][(4*abs_index):(4*abs_index)+4]+bram_dmp['lsb_data'][(4*abs_index):(4*abs_index)+4]
+            if len(raw_xaui_data) == 256:
+                print 'writing Ant%d, Chan%d into memcache.'%(pkt_ant,pkt_freq)
+                mcache.set('px%d:snap_xaui_raw:%d:%d'%(self.xeng[0]+1,pkt_ant,pkt_freq), '')
+        return pkt_ant,pkt_freq
+
+
+
+    def xaui_parse(self,bram_dmp):
+        bram_oob = {'raw':struct.unpack('%iL'%(bram_dmp['length']), bram_dmp['oob_data'])}
+        bram_oob.update({'linkdn':[bool(i>>8) for i in bram_oob['raw']]})
+        bram_oob.update({'mrst':[bool(i>>4) for i in bram_oob['raw']]})
+        bram_oob.update({'adc':[bool(i>>3) for i in bram_oob['raw']]})
+        bram_oob.update({'eof':[bool(i>>2) for i in bram_oob['raw']]})
+        bram_oob.update({'sync':[bool(i>>1) for i in bram_oob['raw']]})
+        bram_oob.update({'hdr':[bool(i>>0) for i in bram_oob['raw']]})
+        
+        skip_indices = []
+        pkt_hdr_idx = -1
+        for i in range(bram_dmp['length']):
+            if bram_oob['adc'][i]:
+                skip_indices.append(i)
+            elif bram_oob['hdr'][i]:
+                pkt_hdr_idx = i
+                skip_indices = []
+            elif bram_oob['eof'][i]:
+                if pkt_hdr_idx<0:continue
+                pkt_len = i-pkt_hdr+1
+                if pkt_len-len(skip_indices) != 33:
+                    pass
+                else: 
+                    ant,freq = xaui_unpack(bram_dmp, pkt_hdr_idx,pkt_len,skpi_indices,mcache)
+                    self.freq_ant[freq].append(ant) 
+        for k in self.freq_ant.keys():
+            if len(self.freq_ant[k]) == 4:
+                self.finished_freq.append(k)
+            if self.finished_freq == range(2048):
+                break
+        print self.finished_freq 
+        if self.finished_freq == []:
+            self.finished_freq.append(0)
+            
+        return max(self.finished_freq)     
     def read_addr(self,xeng):
         self.snap_addr[xeng].flush()
         self.snap_addr[xeng].seek(0)
@@ -316,14 +434,16 @@ class CorrTX:
             # Wait for data to become available
             num = 0
             cnt=0
+            freq_offset = 0
             while num == 0:
                 if cnt == 0:
-                    self.adc_amplitudes()
+                    freq_offset = self.xaui_parse(self.snap_xaui_ram(offset=freq_offset))
+                    
+                self.adc_amplitudes()
                 time.sleep(.1)
                 num = self.read_addr(0)
                 cnt+= 1
-                if cnt == 5:
-                    self.get_corr_read_missing(self.corr_read_missing)
+                self.get_corr_read_missing(self.corr_read_missing)
                 print cnt    
 
             t_fullspec_start_2 = time.time()

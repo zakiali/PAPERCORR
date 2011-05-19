@@ -12,9 +12,9 @@ n_chans=2048
 bandwidth = 0.1
 sdf = 7.32421875e-05 #bandwidth /n_chans in GHz
 sfreq = 0.121142578125
-int_time = 200000000./2048/2048/128 #integration time in seconds
 location=0,0,0
-acc_len = 2048 * 128
+acc_len = 2048 * 128 
+int_time = 2*n_chans*acc_len/200e6 #integration time in seconds
 #acc_len = 1 
  # incoming data divided by this number for correct scaling
 t_per_file=ephem.minute*10

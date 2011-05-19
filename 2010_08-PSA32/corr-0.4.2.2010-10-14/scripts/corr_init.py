@@ -171,10 +171,11 @@ try:
     print ('''done''')
 
     #Initialize input select on the ibob's to be ADC's. THIS IS THE DEFAULT (no options given).
-    print('''Initializing IBoB's input select mux'''),
+    print('''Initializing IBoB's input select mux, seeds, and delays.'''),
     for i in range(len(c.config['servers'])):
         c.seed_ibob(0x00000000,i)
         c.insel_ibob(0x00000000,i)
+        c.delay_ibob(0x00000000,i)
     print('''done''')
 
     #Select which noise sources to use if option given. If none given, then use ADC's

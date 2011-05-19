@@ -33,17 +33,26 @@ sdisp_destination_ip = "127.0.0.1"
 
 print "Sending signal display data to",sdisp_destination_ip
 
-rx=casper_correlator.dacq.DataReceiver(aa, pols=pols, adc_rate=100000000,
-            nchan=n_chans, sfreq=sfreq, sdf=sdf,
-            inttime=int_time, t_per_file=t_per_file,
-            nwin=n_windows_to_buffer, bufferslots=n_bufferslots, 
-            payload_len=max_payload_len, sdisp=1, 
-            sdisp_destination_ip=sdisp_destination_ip,
-            acc_len=acc_len)
-rx.start(port)
+try:
+    rx=casper_correlator.dacq.DataReceiver(aa, pols=pols, adc_rate=100000000,
+                nchan=n_chans, sfreq=sfreq, sdf=sdf,
+                inttime=int_time, t_per_file=t_per_file,
+                nwin=n_windows_to_buffer, bufferslots=n_bufferslots, 
+                payload_len=max_payload_len, sdisp=1, 
+                sdisp_destination_ip=sdisp_destination_ip,
+                acc_len=acc_len)
+    rx.start(port)
 
-raw_input("Press Enter to terminate...\n") 
+    raw_input("Press Enter to terminate...\n") 
     #capture a bunch of stuff here
 
-rx.stop()
+    rx.stop()
+except(KeyboardInterrupt):
+    rx.stop()
+
+
+
+
+
+
 

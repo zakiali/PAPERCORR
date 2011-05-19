@@ -84,7 +84,11 @@ try:
     c=corr.corr_functions.Correlator(args[0],lh)
     for s,server in enumerate(c.config['servers']): c.loggers[s].setLevel(10)
     print 'done'
-
+    
+    #FLUSH MEMCACHED BEFORE STARTING CORRELATOR AGAIN...
+    print 'Flushing memcache'
+    c.mcache.flush_all()
+    print 'DONE'
 
     print '\n======================'
     print 'Initial configuration:'

@@ -55,7 +55,7 @@ try:
     n_ants_per_xaui = c.config['n_ants_per_xaui']
     n_xaui_ports_per_fpga = c.config['n_xaui_ports_per_fpga']
     adc_bits = c.config['adc_bits']
-    adc_levels_acc_len = c.config['adc_levels_acc_len']
+    adc_levels_acc_len = float(c.config['adc_levels_acc_len'])
 
     #mem size is data, each 32 bit numbers * n_pols * n_ants_per_xaui
     mem_size = 4*2*n_ants_per_xaui
@@ -70,7 +70,10 @@ try:
             for x in range(n_xaui_ports_per_fpga):
                 try:
                     adcs[f][x]={'ant_levels': fpga.read('ant_levels',mem_size)}
-                    adcs[f][x]['ant_level_mean'] =  fpga.read('ant_levels_mean',mem_size)
+                    try:
+                        adcs[f][x]['ant_levels_mean'] =  fpga.read('ant_levels_mean',mem_size)
+                    except:
+                        adcs[f][x]['ant_levels_mean'] = "\0"*mem_size
                 except KeyboardInterrupt:
                     exit_clean()
                 except:
@@ -91,16 +94,18 @@ try:
                     for p,pol in enumerate(pols):
                         offset_of_interest = (2*a + p)
                         adcs[f][x][a]['pol_%s'%p]=adcs[f][x]['unpacked_data_power'][offset_of_interest]
+                        unsigned = adcs[f][x]['unpacked_data_mean'][offset_of_interest]
+                        adcs[f][x][a]['pol_%s_mean'%p]= (((1<<23)^unsigned) -(1<<23))/(adc_levels_acc_len)
                         #calculate RMS values:
                         #should be 2**(adc_bits-1)
                         #note that we are subtracting off the mean here.
-                        adcs[f][x][a]['pol_%s_rms'%(p)] = (numpy.sqrt(adcs[f][x]['unpacked_data_power'][offset_of_interest]/(adc_levels_acc_len)-(adcs[f][x]['unpacked_data_mean'][offset_of_interest])**2/(2**adc_bits))
+                        adcs[f][x][a]['pol_%s_rms'%(p)] = (numpy.sqrt(adcs[f][x][a]['pol_%s'%p]/(adc_levels_acc_len)-(adcs[f][x][a]['pol_%s_mean'%p])**2))
                         #calculate bits used:
                         if adcs[f][x][a]['pol_%s_rms'%(p)] == 0:
                             adcs[f][x][a]['pol_%s_bits_used'%(p)] = 0        
                         else:    
                         #should be 2**(adc_bits-1)
-                            adcs[f][x][a]['pol_%s_bits_used'%(p)] = (numpy.log2(adcs[f][x][a]['pol_%s_rms'%(p)] * (2**(adc_bits))))
+                            adcs[f][x][a]['pol_%s_bits_used'%(p)] = numpy.log2(adcs[f][x][a]['pol_%s_rms'%(p)] )
 
 
         #print the output                
@@ -118,13 +123,13 @@ try:
                     for p,pol in enumerate(pols):
                         ant,ignore_pol = c.get_ant_index(f,x,a*2)
                         #print adcs[f][x][a]
-                        print 'ADC%i pol %s (ant %i%s): %.3f (%2.2f bits used) %.3f'%(a,pol,ant,pol, adcs[f][x][a]['pol_%s_rms'%(p)],adcs[f][x][a]['pol_%s_bits_used'%(p)],adcs[f][x][a]['pol_%s_rms'%(p)]*(2**adc_bits))
+                        print 'ADC%i pol %s (ant %i%s): %.3f (%+2.2f bits used) %+.3f'%(a,pol,ant,pol, adcs[f][x][a]['pol_%s_rms'%(p)],adcs[f][x][a]['pol_%s_bits_used'%(p)],adcs[f][x][a]['pol_%s_mean'%p])
                 print '--------------------'
 
 except KeyboardInterrupt:
     exit_clean()
-except:
-    print ''
+#except:
+#    print 'boom'
 
 print 'Done with all'
 exit_clean()

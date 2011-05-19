@@ -1,9 +1,12 @@
 #!/usr/bin/python
-import casper_correlator,corr,ephem,aipy,numpy
+import casper_correlator,corr,ephem,aipy,numpy,sys
 
 # 2-14-2011 Z.A. added 16-31 in 'ants'. preparation for 64 input corr.
-
-
+if sys.argv[1:]==[]:
+    print 'Please specify n for n-input correlator.'
+    exit()      
+args = sys.argv[1:]
+nants = int(args[0])
 port = 7148
 n_chans=2048
 bandwidth = 0.1
@@ -18,38 +21,9 @@ t_per_file=ephem.minute*10
 n_windows_to_buffer=4
 n_bufferslots=10240
 max_payload_len=8192
-ants=[(0,0,0),
-        (1,1,1),
-        (2,2,2),
-        (3,3,3),
-        (4,4,4),
-        (5,5,5),
-        (6,6,6),
-        (7,7,7),
-        (8,8,8),
-        (9,9,9),
-        (10,10,10),
-        (11,11,11),
-        (12,12,12),
-        (13,13,13),
-        (14,14,14),
-        (15,15,15),
-        (16,16,16),
-        (17,17,17),
-        (18,18,18),
-        (19,19,19),
-        (20,20,20),
-        (21,21,21),
-        (22,22,22),
-        (23,23,23),
-        (24,24,24),
-        (25,25,25),
-        (26,26,26),
-        (27,27,27),
-        (28,28,28),
-        (29,29,29),
-        (30,30,30),
-        (31,31,31)]
+ants=[]
+for i in range(nants):
+    ants.append((i,i,i))
 pols=['xx','yy','xy','yx']
 freqs = numpy.arange(n_chans, dtype=numpy.float) * sdf + sfreq
 beam = aipy.phs.Beam(freqs)

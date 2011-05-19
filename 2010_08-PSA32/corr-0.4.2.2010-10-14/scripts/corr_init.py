@@ -22,7 +22,13 @@ Revisions:\n
                 New loopback_mux flush\n
                 Now grabs config settings from global corr.conf file \n
 """
-import corr, time, sys, numpy, os, logging, katcp, socket, struct
+import corr, time, sys, numpy, os, logging, katcp, socket, struct 
+
+FENG_CTL_ADDR = 8192
+ANT_BASE_ADDR = 8193
+INSEL_ADDR    = 8194
+DELAY_ADDR    = 8195
+SEED_ADDR     = 8196
 
 def exit_fail():
     print 'FAILURE DETECTED. Log entries:\n',lh.printMessages()
@@ -78,6 +84,7 @@ try:
     c=corr.corr_functions.Correlator(args[0],lh)
     for s,server in enumerate(c.config['servers']): c.loggers[s].setLevel(10)
     print 'done'
+
 
     print '\n======================'
     print 'Initial configuration:'
@@ -153,11 +160,11 @@ try:
     ant = 0
     #Set the all the XAUI ports to crazy values, so that unused ports will show ridiculous antenna values if you've cabled it up wrong.
     for x in range(c.config['n_xaui_ports_per_fpga']):
-        c.write_all_ibobs(c.config['antenna_offset_addr'],((2**32)-1))
+        c.write_all_ibobs(ANT_BASE_ADDR,((2**32)-1))
     #now set things properly for the used ports:
     for x in range(c.config['n_xaui_ports_per_fpga']):
         for f in range(c.config['n_ants']/c.config['n_ants_per_xaui']/c.config['n_xaui_ports_per_fpga']):
-            c.write_ibob(f,x,c.config['antenna_offset_addr'],ant)
+            c.write_ibob(f,x,ANT_BASE_ADDR,ant)
             print('%i'%ant),
             sys.stdout.flush()
             ant += c.config['n_ants_per_xaui']
@@ -166,6 +173,7 @@ try:
     #Initialize input select on the ibob's to be ADC's. THIS IS THE DEFAULT (no options given).
     print('''Initializing IBoB's input select mux'''),
     for i in range(len(c.config['servers'])):
+        c.seed_ibob(0x00000000,i)
         c.insel_ibob(0x00000000,i)
     print('''done''')
 
@@ -178,13 +186,13 @@ try:
                 c.insel_ibob(0x00000000,i)
         elif opts.noise == 'dig0':
             print ('''Selecting digital noise (2 kinds)'''),
-            val = [0x00000000,0x00000000,0x00000000,0x00000000]
+            val = [0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000]
             for i in range(len(c.config['servers'])):
                 c.seed_ibob(val[i],i)
                 c.insel_ibob(0x12121212,i)
         elif opts.noise == 'dig1':
             print ('''selecting digital noise. All different.'''),
-            val = [0x11223344, 0x55667788, 0x99aabbcc, 0xddeeff00] 
+            val = [0x11223344, 0x55667788, 0x99aabbcc, 0xddeeff00, 0x11223344, 0x55667788, 0x99aabbcc, 0xddeeff00] 
             for i in range(len(c.config['servers'])):
                 c.seed_ibob(val[i],i)
                 c.insel_ibob(0x12121212, i)

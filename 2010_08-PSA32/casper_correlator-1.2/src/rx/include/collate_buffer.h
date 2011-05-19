@@ -41,8 +41,9 @@ typedef struct {
     int nwin;
     int sdisp;
     int acc_len;
+    int64_t intsamps; // Number of samples per integration
     uint64_t sync_time;
-    int64_t cur_t; // Change from uint64_t to int64_t is intentional
+    int64_t cur_t; // Change from uint64_t to int64_t is intentional (why?)
     int rd_win;
     int n_reject;
     int (*callback)(int,int,int,int64_t,float *,int *, int, void *);

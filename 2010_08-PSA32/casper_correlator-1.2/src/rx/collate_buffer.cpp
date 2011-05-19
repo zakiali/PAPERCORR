@@ -108,6 +108,7 @@ void init_collate_buffer(CollateBuffer *cb, int nant, int nchan, int npol, int n
     cb->nwin = nwin;
     cb->sdisp = sdisp;
     cb->acc_len = acc_len;
+    cb->intsamps = (int64_t)nchan * acc_len;
     cb->sync_time = 0;
     cb->buflen = 2 * cb->nbl * nchan * npol * nwin;
     cb->cur_t = NOTIME;
@@ -227,11 +228,11 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
         printf("Setting timelock to %ld, %s", cb->cur_t,ctime(&pkt_ts));
         cb->rd_win = 0;
         cb->n_reject = 0;
-    } else if (pkt_t <= cb->cur_t - cb->nwin*ACC_RANGE*ADC_RATE || pkt_t > cb->cur_t + cb->nwin*ACC_RANGE*ADC_RATE) {
+    } else if (pkt_t <= cb->cur_t - cb->nwin*cb->intsamps || pkt_t > cb->cur_t + cb->nwin*cb->intsamps) {
         // Case for locked on integration and rx out-of-range pkt
         printf("Rejecting packet with timestamp %ld\ni.", pkt_t);
         printf(" Timelock at %ld, accepting (%ld,%ld]\n", 
-                cb->cur_t, cb->cur_t - cb->nwin*ACC_RANGE*ADC_RATE, cb->cur_t + cb->nwin*ACC_RANGE*ADC_RATE);
+                cb->cur_t, cb->cur_t - cb->nwin*cb->intsamps, cb->cur_t + cb->nwin*cb->intsamps);
         cb->n_reject += 1;
         if (cb->n_reject > MAX_REJECT) {
             printf("Too many packet rejections: Resetting timelock.\n");

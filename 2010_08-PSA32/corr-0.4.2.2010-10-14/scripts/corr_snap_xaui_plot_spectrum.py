@@ -7,7 +7,7 @@ Grabs the contents of "snap_xaui" for analysis.
 
 #4/9/2011 - fixed antenna bug. Things seem to be working fine.
 
-import corr, time, numpy, pylab, struct, sys, logging
+import corr, time, numpy, pylab, struct, sys, logging, pylibmc
 
 
 #brams
@@ -37,7 +37,7 @@ def exit_clean():
     except: pass
     exit()
 
-def xaui_feng_unpack(xeng,xaui_port,bram_dump,hdr_index,pkt_len,skip_indices):
+def xaui_feng_unpack(xeng,xaui_port,bram_dump,hdr_index,pkt_len,skip_indices,mcache):
     pkt_64bit = struct.unpack('>Q',bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index)+4]+bram_dmp['bram_lsb'][(4*hdr_index):(4*hdr_index)+4])[0]
     pkt_mcnt =(pkt_64bit&((2**64)-(2**16)))>>16
     #pkt_ant  = xeng*c.config['n_xaui_ports_per_fpga']*c.config['n_ants_per_xaui'] + xaui_port*c.config['n_ants_per_xaui'] + pkt_64bit&((2**16)-1)
@@ -59,13 +59,26 @@ def xaui_feng_unpack(xeng,xaui_port,bram_dump,hdr_index,pkt_len,skip_indices):
             continue
 
         pkt_64bit = struct.unpack('>Q',bram_dmp['bram_msb'][(4*abs_index):(4*abs_index)+4]+bram_dmp['bram_lsb'][(4*abs_index):(4*abs_index)+4])[0]
-
+        raw_xaui_data = bram_dmp['bram_msb'][(4*abs_index):(4*abs_index)+4]+bram_dmp['bram_lsb'][(4*abs_index):(4*abs_index)+4]
+        #save raw data to memcached with the following format:
+        #px?:snap_xaui_raw:antenna:channel = string of length 128 (each sample of a single channel ) * 1(change format to one byte instead of nibble) * 2(r,i) * 2(dual pol)
+        if mcache.get('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq)) == None:
+            mcache.set('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq), '')
+        if len(mcache.get('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq))) == 256:
+            #print 'writing Ant%d, Chan%d into memcache.'%(pkt_ant,pkt_freq)
+            mcache.set('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq), '')
+            
+   
+        mcache.set('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq),mcache.get('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq)) + raw_xaui_data) 
+        #if (pkt_ant==0 and pkt_freq == 650): 
+            #print len(mcache.get('px%d:snap_xaui_raw:%d:%d'%(xeng+1,pkt_ant,pkt_freq)))
         for offset in range(48,-16,-16):
             polQ_r = (pkt_64bit >> (offset + 12)) & 0xf
             polQ_i = (pkt_64bit >> (offset +  8)) & 0xf
             polI_r = (pkt_64bit >> (offset +  4)) & 0xf
             polI_i = (pkt_64bit >> (offset     )) & 0xf
-
+        
+        
             #square each number and then sum it
             sum_polQ_r += (float(((numpy.int8(polQ_r << 4)>> 4)))/(2**binary_point))**2
             sum_polQ_i += (float(((numpy.int8(polQ_i << 4)>> 4)))/(2**binary_point))**2
@@ -115,6 +128,7 @@ if __name__ == '__main__':
         exit()
 
     ant=opts.ant
+    print ant
 
 lh=corr.log_handlers.DebugLogHandler()
 lh.setLevel(10)
@@ -123,6 +137,8 @@ try:
     c=corr.corr_functions.Correlator(args[0],lh)
     for s,server in enumerate(c.config['servers']): c.loggers[s].setLevel(10)
     print 'done.'
+    
+    mcache = pylibmc.Client(['%s'%c.config['rx_udp_ip_str']])
 
     packet_len=c.config['10gbe_pkt_len']
     n_chans=c.config['n_chans']
@@ -141,8 +157,18 @@ try:
 
     print 'Looking for antenna %i on board %i (%s) XAUI port %i. Antenna %i on that port.'%(ant,target_fpga, c.servers[target_fpga],target_xaui,xaui_ant)
 
-    snap_rms_i= numpy.zeros(n_chans)
-    snap_rms_q= numpy.zeros(n_chans)
+   # snap_rms_i= numpy.zeros(n_chans)
+   # snap_rms_q= numpy.zeros(n_chans)
+    snaps = [ numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans),
+             numpy.zeros(n_chans)]
+        
+    raw_data_dump = 0
 
     offset=0 #channel offset to capture next
     pkt_len=0
@@ -187,7 +213,7 @@ try:
                 print 'LINK DOWN AT %i'%(i)
             elif bram_oob['adc'][i]:
                 adc,amp = struct.unpack('>II',bram_dmp['bram_msb'][(4*i):(4*i)+4]+bram_dmp['bram_lsb'][(4*i):(4*i)+4])
-                adc_ant,adc_pol=c.get_ant_index(target_fpga,target_xaui,adc)
+                adc_ant,adc_pol=c.get_ant_index(target_fpga,target_xaui,adc&0xff)
                 print ' ADC amplitude update at index %i for input %i (ant %i,%s) with RMS count of %3f.'%(i,adc,adc_ant,adc_pol,numpy.sqrt(float(amp)/adc_levels_acc_len))
 
                 skip_indices.append(i) #skip_indices records positions in table which are ADC updates and should not be counted towards standard data.
@@ -205,7 +231,7 @@ try:
                     print 'MALFORMED PACKET! of length %i starting at index %i'%(pkt_len-len(skip_indices),i)
                     print 'skip_indices: (%i numbers):'%len(skip_indices),skip_indices
                 else:
-                    feng_unpkd_pkt=xaui_feng_unpack(target_fpga,target_xaui,bram_dmp,pkt_hdr_idx,pkt_len,skip_indices)
+                    feng_unpkd_pkt=xaui_feng_unpack(target_fpga,target_xaui,bram_dmp,pkt_hdr_idx,pkt_len,skip_indices,mcache)
                     if opts.verbose: print '[Pkt@ %4i Len: %2i]     (MCNT %12u ANT: %1i, Freq: %4i)    {4 bit: Qr: %1.2f Qi: %1.2f Ir %1.2f Ii: %1.2f}'%(\
                         pkt_hdr_idx,\
                         pkt_len-len(skip_indices),\
@@ -217,34 +243,56 @@ try:
                         feng_unpkd_pkt['level_polI_r'],\
                         feng_unpkd_pkt['level_polI_i'])
 
-                    if feng_unpkd_pkt['pkt_ant'] == ant:
-                        snap_rms_q[feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
-                        snap_rms_i[feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
 
-                    if (offset>=(n_chans-1)): 
-                        #Got all the channels, exit.
-                        offset=feng_unpkd_pkt['pkt_freq']
-                        break
+                    if feng_unpkd_pkt['pkt_ant']%4 == 0:  
+                        snaps[0][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
+                        snaps[1][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
+                    if feng_unpkd_pkt['pkt_ant']%4 == 1:  
+                        snaps[2][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
+                        snaps[3][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
+                    if feng_unpkd_pkt['pkt_ant']%4 == 2:  
+                        snaps[4][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
+                        snaps[5][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
+                    if feng_unpkd_pkt['pkt_ant']%4 == 3:  
+                        snaps[6][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
+                        snaps[7][feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
+
+                    #if feng_unpkd_pkt['pkt_ant'] == ant:
+                    #    snap_rms_q[feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polQ']
+                    #    snap_rms_i[feng_unpkd_pkt['pkt_freq']]=feng_unpkd_pkt['rms_polI']
+
+                    #if (offset>(n_chans-1)): 
+                    #    #Got all the channels, exit.
+                    #    offset=feng_unpkd_pkt['pkt_freq']
+                    #    break
+                    if (offset<n_chans):
+                        if feng_unpkd_pkt['pkt_ant']%4 == 3:
+                            offset=feng_unpkd_pkt['pkt_freq']+1
+                            if offset == 2048: 
+                                print 'got last channel'
+                                break
+                        else: offset = feng_unpkd_pkt['pkt_freq']
                     elif (offset-2 > feng_unpkd_pkt['pkt_freq']):
                         print 'Snap block failed to capture at the correct trigger offset. Exiting.'
                         exit_clean()
-                    else:
-                        offset=feng_unpkd_pkt['pkt_freq']
-                        
-
+                    print offset
     print '\n\nDone Capturing. Plotting...' 
+    
+    for input in range(c.config['n_ants_per_xaui']):
+        mcache.set('snap_xaui:%d'%((ant/4)*4*2+input),snaps[input].tostring())
 
+    ant2plt = 2*(ant%4)
     pylab.figure(ant)
     ax1=pylab.subplot(211)
-    pylab.title('Antenna %i\n"X" input rms'%ant)
-    pylab.plot(range(0,n_chans),snap_rms_q)
+    pylab.title('Antenna %i\n"X" input rms. RMS = %f'%(ant,numpy.average(snaps[ant2plt])))
+    pylab.plot(range(0,n_chans),snaps[ant2plt])
     #pylab.plot(range(0,n_chans),snap_rms_q,'.')
     pylab.setp(ax1.get_xticklabels(), visible=False)
 
     pylab.subplot(212,sharex=ax1,sharey=ax1)
-    pylab.title('"Y" input rms')
+    pylab.title('"Y" input rms. RMS = %f'%(numpy.average(snaps[ant2plt+1])))
     #pylab.plot(range(0,n_chans),snap_rms_i,'.',label='ant%i'%xaui_ant)
-    pylab.plot(range(0,n_chans),snap_rms_i)
+    pylab.plot(range(0,n_chans),snaps[ant2plt +1])
     pylab.ylim((0,1))
     pylab.xlim(0,n_chans)
     pylab.xlabel('Channel')

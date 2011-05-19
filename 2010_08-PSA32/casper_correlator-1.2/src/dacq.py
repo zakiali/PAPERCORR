@@ -27,7 +27,7 @@ def start_uv_file(filename, aa, pols, nchan, sfreq, sdf, inttime):
     uv['antpos'] = antpos.transpose().flatten()
     uv.add_var('sfreq'   ,'d'); uv['sfreq'] = sfreq
     uv.add_var('freq'    ,'d'); uv['freq'] = sfreq
-    uv.add_var('restfreq','d'); uv['restfreq'] = 0.15 
+    uv.add_var('restfreq','d'); uv['restfreq'] = sfreq + sdf*nchan/2
     uv.add_var('sdf'     ,'d'); uv['sdf'] = sdf
     uv.add_var('nchan'   ,'i'); uv['nchan'] = nchan
     uv.add_var('nschan'  ,'i'); uv['nschan'] = nchan

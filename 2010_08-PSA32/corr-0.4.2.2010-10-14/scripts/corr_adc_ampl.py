@@ -70,6 +70,7 @@ try:
             for x in range(n_xaui_ports_per_fpga):
                 try:
                     adcs[f][x]={'ant_levels': fpga.read('ant_levels',mem_size)}
+                    adcs[f][x]['ant_level_mean'] =  fpga.read('ant_levels_mean',mem_size)
                 except KeyboardInterrupt:
                     exit_clean()
                 except:
@@ -82,16 +83,18 @@ try:
         for f in range((c.config['n_ants']/c.config['n_ants_per_xaui']/c.config['n_xaui_ports_per_fpga'])):
             fpga=c.fpgas[f]
             for x in range(n_xaui_ports_per_fpga):
-                adcs[f][x]['unpacked_data'] = struct.unpack('>%iI'%(2*n_ants_per_xaui), adcs[f][x]['ant_levels'])
-                if opts.verbose: print '[%s] [xaui%i] unpacked adc_pwrs:'%(servers[f],x),adcs[f][x]['unpacked_data']
+                adcs[f][x]['unpacked_data_power'] = struct.unpack('>%iI'%(2*n_ants_per_xaui), adcs[f][x]['ant_levels'])
+                adcs[f][x]['unpacked_data_mean'] = struct.unpack('>%iI'%(2*n_ants_per_xaui), adcs[f][x]['ant_levels_mean'])
+                if opts.verbose: print '[%s] [xaui%i] unpacked adc_pwrs:'%(servers[f],x),adcs[f][x]['unpacked_data_power']
                 for a in range(n_ants_per_xaui):
                     adcs[f][x][a]={}
                     for p,pol in enumerate(pols):
                         offset_of_interest = (2*a + p)
-                        adcs[f][x][a]['pol_%s'%p]=adcs[f][x]['unpacked_data'][offset_of_interest]
+                        adcs[f][x][a]['pol_%s'%p]=adcs[f][x]['unpacked_data_power'][offset_of_interest]
                         #calculate RMS values:
                         #should be 2**(adc_bits-1)
-                        adcs[f][x][a]['pol_%s_rms'%(p)] = (numpy.sqrt(adcs[f][x]['unpacked_data'][offset_of_interest]/(adc_levels_acc_len))/(2**adc_bits))
+                        #note that we are subtracting off the mean here.
+                        adcs[f][x][a]['pol_%s_rms'%(p)] = (numpy.sqrt(adcs[f][x]['unpacked_data_power'][offset_of_interest]/(adc_levels_acc_len)-(adcs[f][x]['unpacked_data_mean'][offset_of_interest])**2/(2**adc_bits))
                         #calculate bits used:
                         if adcs[f][x][a]['pol_%s_rms'%(p)] == 0:
                             adcs[f][x][a]['pol_%s_bits_used'%(p)] = 0        

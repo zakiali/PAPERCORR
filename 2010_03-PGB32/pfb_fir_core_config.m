@@ -26,9 +26,9 @@ function pfb_fir_core_config(this_block)
   this_block.addSimulinkOutport('out1');
 
   out0_port = this_block.port('out0');
-  out0_port.setType('UFix_18_17');
+  out0_port.setType('Fix_18_17');
   out1_port = this_block.port('out1');
-  out1_port.setType('UFix_18_17');
+  out1_port.setType('Fix_18_17');
   sync_out_port = this_block.port('sync_out');
   sync_out_port.setType('Bool');
   sync_out_port.useHDLVector(false);

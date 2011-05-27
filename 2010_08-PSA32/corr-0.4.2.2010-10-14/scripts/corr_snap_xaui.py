@@ -238,9 +238,10 @@ try:
                 print '[%s] LINK DOWN AT %i'%(c.servers[f],i)
 
             elif bram_oob[f]['adc'][i]:
-                adc,amp = struct.unpack('>II',bram_dmp['bram_msb'][f][(4*i):(4*i)+4]+bram_dmp['bram_lsb'][f][(4*i):(4*i)+4])
-                adc_ant,adc_pol=c.get_ant_index(f,target_xaui,adc)
-                print '[%s][%i] ADC amplitude update for input %i (ant%i%s) with raw value 0x%08x. (average ADC count %3f)'%(c.servers[f],i,adc,adc_ant,adc_pol,amp,numpy.sqrt(float(amp)/adc_levels_acc_len))
+               # adc,amp = struct.unpack('>II',bram_dmp['bram_msb'][f][(4*i):(4*i)+4]+bram_dmp['bram_lsb'][f][(4*i):(4*i)+4])
+               # print 'asdfefwef;',adc,amp
+               # adc_ant,adc_pol=c.get_ant_index(f,target_xaui,adc)
+               # print '[%s][%i] ADC amplitude update for input %i (ant%i%s) with raw value 0x%08x. (average ADC count %3f)'%(c.servers[f],i,adc,adc_ant,adc_pol,amp,numpy.sqrt(float(amp)/adc_levels_acc_len))
                 skip_indices.append(i)
 
             elif bram_oob[f]['hdr'][i]:

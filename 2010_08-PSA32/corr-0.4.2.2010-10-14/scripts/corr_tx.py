@@ -221,12 +221,12 @@ class CorrTX:
         print 'px%d:adc_sum_squares'%(self.xeng[0]+1)
         print 'done'
 
-    def snap_xaui_ram(self,offset=-1, wait = 1):
+    def snap_xaui_ram(self,pkt_len,offset=-1, wait = 1):
         if offset >=0:
-            print offset
+            print 'freq offset in snap_xaui_ram=',offset,offset*32*4
             self.snap_xaui_trig_offset.flush()
             self.snap_xaui_trig_offset.seek(0)
-            self.snap_xaui_trig_offset.write(struct.pack('I',offset))
+            self.snap_xaui_trig_offset.write(struct.pack('I',offset*pkt_len*4))
             self.snap_xaui_trig_offset.flush()
             
         self.snap_xaui_ctrl.flush()
@@ -265,8 +265,8 @@ class CorrTX:
         print bram_dmp.keys()
         return bram_dmp 
         
-    def xaui_unpack(self,bram_dmp, hdr_index,pkt_len,skip_indices,mcache=self.mcache):
-        pkt_64bit_hdr = struct.unpack('Q', bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index)+4] + bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index+4)])[0] 
+    def xaui_unpack(self,bram_dmp, hdr_index,pkt_len,skip_indices,mcache):
+        pkt_64bit_hdr = struct.unpack('Q', bram_dmp['msb_data'][(4*hdr_index):(4*hdr_index)+4] + bram_dmp['lsb_data'][(4*hdr_index):(4*hdr_index+4)])[0] 
         pkt_mcnt = pkt_64bit_hdr >>16
         pkt_ant = pkt_64bit_hdr & 0xffff
         pkt_freq = pkt_mcnt%2048 #mcnt % nchans
@@ -278,27 +278,27 @@ class CorrTX:
             raw_xaui_data += bram_dmp['msb_data'][(4*abs_index):(4*abs_index)+4]+bram_dmp['lsb_data'][(4*abs_index):(4*abs_index)+4]
             if len(raw_xaui_data) == 256:
                 print 'writing Ant%d, Chan%d into memcache.'%(pkt_ant,pkt_freq)
-                mcache.set('px%d:snap_xaui_raw:%d:%d'%(self.xeng[0]+1,pkt_ant,pkt_freq), '')
+                mcache.set('px%d:snap_xaui_raw:%d:%d'%(self.xeng[0]+1,pkt_ant%4,pkt_freq), raw_xaui_data)
         return pkt_ant,pkt_freq
 
 
 
     def xaui_parse(self,bram_dmp):
         bram_oob = {'raw':struct.unpack('%iL'%(bram_dmp['length']), bram_dmp['oob_data'])}
-        bram_oob.update({'linkdn':[bool(i>>8) for i in bram_oob['raw']]})
-        bram_oob.update({'mrst':[bool(i>>4) for i in bram_oob['raw']]})
-        bram_oob.update({'adc':[bool(i>>3) for i in bram_oob['raw']]})
-        bram_oob.update({'eof':[bool(i>>2) for i in bram_oob['raw']]})
-        bram_oob.update({'sync':[bool(i>>1) for i in bram_oob['raw']]})
-        bram_oob.update({'hdr':[bool(i>>0) for i in bram_oob['raw']]})
+        bram_oob.update({'linkdn':[bool(i&(1<<8)) for i in bram_oob['raw']]})
+        bram_oob.update({'mrst':[bool(i&(1<<4)) for i in bram_oob['raw']]})
+        bram_oob.update({'adc':[bool(i&(1<<3)) for i in bram_oob['raw']]})
+        bram_oob.update({'eof':[bool(i&(1<<2)) for i in bram_oob['raw']]})
+        bram_oob.update({'sync':[bool(i&(1<<1)) for i in bram_oob['raw']]})
+        bram_oob.update({'hdr':[bool(i & (1<<0)) for i in bram_oob['raw']]})
         if opts.verbose:
-            for k in range(bram_oob['raw']):
-                if bram_oob['linkdn'][k] == 1:print 'linkdn'
-                if bram_oob['mrst'][k] == 1:print 'mrst'
-                if bram_oob['adc'][k] == 1:print 'adc'
-                if bram_oob['eof'][k] == 1:print 'eof'
-                if bram_oob['sync'][k] == 1:print 'sync'
-                if bram_oob['hdr'][k] == 1:print 'hdr'
+            for k in range(len(bram_oob['raw'])):
+                if bram_oob['linkdn'][k]:print k,'linkdn'
+                if bram_oob['mrst'][k]:print k,'mrst'
+                if bram_oob['adc'][k]:print k,'adc'
+                if bram_oob['eof'][k]:print k,'eof'
+                if bram_oob['sync'][k]:print k,'sync'
+                if bram_oob['hdr'][k]:print k,'hdr'
         
         skip_indices = []
         pkt_hdr_idx = -1
@@ -306,30 +306,34 @@ class CorrTX:
         print 'bram_dmp["length"] = ', bram_dmp['length']
         for i in range(bram_dmp['length']):
             if bram_oob['adc'][i]:
+                print 'Adding skip indices',i
                 skip_indices.append(i)
             elif bram_oob['hdr'][i]:
+                print 'header at',i
                 pkt_hdr_idx = i
                 skip_indices = []
             elif bram_oob['eof'][i]:
+                print 'got eof'
                 if pkt_hdr_idx<0:continue
-                pkt_len = i-pkt_hdr+1
-                if pkt_len-len(skip_indices) != 33:
-                    pass
-                else: 
-                    ant,freq = self.xaui_unpack(bram_dmp,pkt_hdr_idx,pkt_len,skip_indices,self.mcache)
-                    self.freq_ant[freq].append(ant) 
+                pkt_len = i-pkt_hdr_idx+1
+                #if pkt_len-len(skip_indices) != 33:
+                #    pass
+                print 'unpacking data'
+                ant,freq = self.xaui_unpack(bram_dmp,pkt_hdr_idx,pkt_len,skip_indices,self.mcache)
+                self.freq_ant[freq].append(ant) 
         for k in self.freq_ant.keys():
             if len(self.freq_ant[k]) == 4:
                 self.finished_freq.append(k)
-            if self.finished_freq == range(2048):
+            if max(self.finished_freq) == 2047:
                 print 'got all channels.Initializing finished_freq...'
                 finished_freq = []
                 break
         print self.finished_freq 
+        print max(self.finished_freq)
         if self.finished_freq == []:
             self.finished_freq.append(0)
             
-        return max(self.finished_freq)     
+        return max(self.finished_freq),pkt_len     
 
     def read_addr(self,xeng):
         self.snap_addr[xeng].flush()
@@ -445,6 +449,7 @@ class CorrTX:
         #self.get_corr_read_missing(self.corr_read_missing)
         #print 'time to get corr_read_missing data and save in memcached = ', time.time() - t1
         freq_offset = 0
+        pkt_len = 0
         while True:
             t_fullspec_start = time.time()
             # Wait for data to become available
@@ -452,7 +457,8 @@ class CorrTX:
             cnt=0
             while num == 0:
                 if cnt == 0:
-                    freq_offset = self.xaui_parse(self.snap_xaui_ram(offset=freq_offset))
+                    freq_offset,pkt_len = self.xaui_parse(self.snap_xaui_ram(pkt_len,offset=freq_offset))
+                    print 'freq_offset =', freq_offset
                 self.adc_amplitudes()
                 time.sleep(.1)
                 num = self.read_addr(0)

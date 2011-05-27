@@ -239,7 +239,7 @@ class CorrTX:
         time.sleep(wait)
         done = False
         start_time = time.time()
-        while not (done and (offset > 0)) and ((time.time() - start_time) < wait):
+        while not (done and (offset > 0))# and ((time.time() - start_time) < wait):
             print 'not done'
             self.snap_xaui_addr.seek(0)
             addr = struct.unpack('I',self.snap_xaui_addr.read())[0]
@@ -255,15 +255,17 @@ class CorrTX:
             #begin read out of data.
             self.snap_xaui_oob.seek(0)
             bram_dmp['oob_data'] = self.snap_xaui_oob.read((bram_size+1)*4)
-            self.snap_xaui_lsb.seek(0) 
+            self.snap_xaui_lsb.seek(0)
             bram_dmp['lsb_data'] = self.snap_xaui_lsb.read((bram_size+1)*4)
-            self.snap_xaui_msb.seek(0) 
+            self.snap_xaui_msb.seek(0)
             bram_dmp['msb_data'] = self.snap_xaui_msb.read((bram_size+1)*4)
-        else: print addr,struct.unpack('I',self.snap_xaui_addr.read())     
+        else: 
+            self.snap_xaui_addr.seek(0)
+            print addr,struct.unpack('I',self.snap_xaui_addr.read())
         print bram_dmp.keys()
         return bram_dmp 
         
-    def xaui_unpack(self,bram_dmp, hdr_index,pkt_len,skip_indices,mcache):
+    def xaui_unpack(self,bram_dmp, hdr_index,pkt_len,skip_indices,mcache=self.mcache):
         pkt_64bit_hdr = struct.unpack('Q', bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index)+4] + bram_dmp['bram_msb'][(4*hdr_index):(4*hdr_index+4)])[0] 
         pkt_mcnt = pkt_64bit_hdr >>16
         pkt_ant = pkt_64bit_hdr & 0xffff
@@ -289,9 +291,19 @@ class CorrTX:
         bram_oob.update({'eof':[bool(i>>2) for i in bram_oob['raw']]})
         bram_oob.update({'sync':[bool(i>>1) for i in bram_oob['raw']]})
         bram_oob.update({'hdr':[bool(i>>0) for i in bram_oob['raw']]})
+        if opts.verbose:
+            for k in range(bram_oob['raw']):
+                if bram_oob['linkdn'][k] == 1:print 'linkdn'
+                if bram_oob['mrst'][k] == 1:print 'mrst'
+                if bram_oob['adc'][k] == 1:print 'adc'
+                if bram_oob['eof'][k] == 1:print 'eof'
+                if bram_oob['sync'][k] == 1:print 'sync'
+                if bram_oob['hdr'][k] == 1:print 'hdr'
         
         skip_indices = []
         pkt_hdr_idx = -1
+        
+        print 'bram_dmp["length"] = ', bram_dmp['length']
         for i in range(bram_dmp['length']):
             if bram_oob['adc'][i]:
                 skip_indices.append(i)
@@ -304,18 +316,21 @@ class CorrTX:
                 if pkt_len-len(skip_indices) != 33:
                     pass
                 else: 
-                    ant,freq = xaui_unpack(bram_dmp, pkt_hdr_idx,pkt_len,skpi_indices,mcache)
+                    ant,freq = self.xaui_unpack(bram_dmp,pkt_hdr_idx,pkt_len,skip_indices,self.mcache)
                     self.freq_ant[freq].append(ant) 
         for k in self.freq_ant.keys():
             if len(self.freq_ant[k]) == 4:
                 self.finished_freq.append(k)
             if self.finished_freq == range(2048):
+                print 'got all channels.Initializing finished_freq...'
+                finished_freq = []
                 break
         print self.finished_freq 
         if self.finished_freq == []:
             self.finished_freq.append(0)
             
         return max(self.finished_freq)     
+
     def read_addr(self,xeng):
         self.snap_addr[xeng].flush()
         self.snap_addr[xeng].seek(0)
@@ -429,16 +444,15 @@ class CorrTX:
         #t1 = time.time()
         #self.get_corr_read_missing(self.corr_read_missing)
         #print 'time to get corr_read_missing data and save in memcached = ', time.time() - t1
+        freq_offset = 0
         while True:
             t_fullspec_start = time.time()
             # Wait for data to become available
             num = 0
             cnt=0
-            freq_offset = 0
             while num == 0:
                 if cnt == 0:
                     freq_offset = self.xaui_parse(self.snap_xaui_ram(offset=freq_offset))
-                    
                 self.adc_amplitudes()
                 time.sleep(.1)
                 num = self.read_addr(0)

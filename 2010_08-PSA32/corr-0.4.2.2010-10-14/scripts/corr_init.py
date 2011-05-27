@@ -143,6 +143,7 @@ try:
     sys.stdout.flush()
     trig_time=c.arm()
     print 'Armed. Expect trigg at %s local.'%(time.strftime('%H:%M:%S',time.localtime(trig_time))),
+    c.mcache.set('mcount_initialize_time',trig_time)
     time_skt=socket.socket(type=socket.SOCK_DGRAM)
     pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,trig_time)
     time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))

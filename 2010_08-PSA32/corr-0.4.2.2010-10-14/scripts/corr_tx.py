@@ -181,7 +181,12 @@ class CorrTX:
         'vacc_cnt' : [open('/proc/%i/hw/ioreg/vacc_cnt%i'%(pid,x),'r') for x in range(x_per_fpga)],
         'vacc_err_cnt' : [open('/proc/%i/hw/ioreg/vacc_err_cnt%i'%(pid,x),'r') for x in range(x_per_fpga)]}
         return corr_read_missing
-    
+
+    def set_multi_ints_no_pickle(self, dict):
+        print dict
+        for key in dict.keys():
+            self.mcache.set(key, struct.pack(">" + "4s"*len(dict[key]), *dict[key]))
+
     def get_corr_read_missing(self,corr_read_dictionary = {}): 
         corr_read2write = {}
         print 'Reading corr_read_missing registers'
@@ -193,7 +198,7 @@ class CorrTX:
                 corr_read_dictionary[key][i].flush()
                 corr_read2write['px%d:'%(self.xeng[0]+1)+key].append(corr_read_dictionary[key][i].read())
         print 'Saving corr_read_missing registers to memcached'
-        self.mcache.set_multi(corr_read2write)     
+        self.set_multi_ints_no_pickle(corr_read2write)     
         print 'done'
         
     def adc_amplitudes(self):
@@ -239,7 +244,7 @@ class CorrTX:
         time.sleep(wait)
         done = False
         start_time = time.time()
-        while not (done and (offset > 0))# and ((time.time() - start_time) < wait):
+        while not (done and (offset > 0)) and ((time.time() - start_time) < wait):
             print 'not done'
             self.snap_xaui_addr.seek(0)
             addr = struct.unpack('I',self.snap_xaui_addr.read())[0]
@@ -273,7 +278,7 @@ class CorrTX:
         raw_xaui_data=''
         for pkt_index in range(1,(pkt_len)):
             abs_index = hdr_index + pkt_index
-            if skip_indices.count(abs_index)>1:continue
+            if skip_indices.count(abs_index)>0:continue
 
             raw_xaui_data += bram_dmp['msb_data'][(4*abs_index):(4*abs_index)+4]+bram_dmp['lsb_data'][(4*abs_index):(4*abs_index)+4]
             if len(raw_xaui_data) == 256:
@@ -323,16 +328,21 @@ class CorrTX:
                 self.freq_ant[freq].append(ant) 
         for k in self.freq_ant.keys():
             if len(self.freq_ant[k]) == 4:
-                self.finished_freq.append(k)
+                if (k in self.finished_freq)==False:
+                    self.finished_freq.append(k)
+                    print 'appending'
+                    print self.finished_freq
             if max(self.finished_freq) == 2047:
                 print 'got all channels.Initializing finished_freq...'
-                finished_freq = []
+                self.finished_freq = []
+                self.freq_ant = {}
+                for l in range(2048):self.freq_ant[l] = []
                 break
         print self.finished_freq 
-        print max(self.finished_freq)
         if self.finished_freq == []:
             self.finished_freq.append(0)
-            
+            pkt_len = 0
+        print max(self.finished_freq)    
         return max(self.finished_freq),pkt_len     
 
     def read_addr(self,xeng):

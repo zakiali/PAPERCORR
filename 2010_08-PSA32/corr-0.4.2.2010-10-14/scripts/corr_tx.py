@@ -227,7 +227,6 @@ class CorrTX:
         print 'saving adc data into memcache'
         try:
             self.mcache.set_multi({'px%d:adc_sum_squares'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
-            self.mcache.get_multi({'px%d:adc_sum_squaresdfsa'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
             print 'px%d:adc_sum_squares'%(self.xeng[0]+1)
             print 'done'
         except Exception, e: print 'MEMCACHE ERROR (adc_amplitudes)',e

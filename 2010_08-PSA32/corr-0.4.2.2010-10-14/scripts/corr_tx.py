@@ -188,7 +188,7 @@ class CorrTX:
         for key in dict.keys():
             try:
                 self.mcache.set(key, struct.pack(">" + "4s"*len(dict[key]), *dict[key]))
-            except Exception, e: print 'MEMCACHE ERROR',e
+            except Exception, e: print 'MEMCACHE ERROR (set multi ints no pickel)',e
 
     def get_corr_read_missing(self,corr_read_dictionary = {}): 
         corr_read2write = {}
@@ -227,9 +227,10 @@ class CorrTX:
         print 'saving adc data into memcache'
         try:
             self.mcache.set_multi({'px%d:adc_sum_squares'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
+            self.mcache.get_multi({'px%d:adc_sum_squaresdfsa'%(self.xeng[0]+1):adc, 'px%d:adc_sum'%(self.xeng[0]+1):adc_mean})
             print 'px%d:adc_sum_squares'%(self.xeng[0]+1)
             print 'done'
-        except Exception, e: print 'MEMCACHE ERROR',e
+        except Exception, e: print 'MEMCACHE ERROR (adc_amplitudes)',e
 
     def snap_xaui_ram(self,pkt_len,offset=-1, wait = 1):
         if offset >=0:
@@ -290,7 +291,7 @@ class CorrTX:
                 print 'writing Ant%d, Chan%d into memcache.'%(pkt_ant,pkt_freq)
                 try:
                     mcache.set('px%d:snap_xaui_raw:%d:%d'%(self.xeng[0]+1,pkt_ant%4,pkt_freq), raw_xaui_data)
-                except Exception, e: print 'MEMCACHE ERROR',e
+                except Exception, e: print 'MEMCACHE ERROR(xaui unpack)',e
         return pkt_ant,pkt_freq
 
 
@@ -532,11 +533,11 @@ class CorrTX:
             if n_integrations == 1:
                 try:
                     self.mcache.set('px%d:integration'%(self.xeng[0]+1),0)
-                except Exception, e: print 'MEMCACHE ERROR', e
+                except Exception, e: print 'MEMCACHE ERROR (set integration)', e
                 
                 
             try:self.mcache.incr('px%d:integration'%(self.xeng[0]+1))
-            except Exception, e: print 'MEMCACHE ERROR', e
+            except Exception, e: print 'MEMCACHE ERROR (integration increment)', e
 
 if __name__ == '__main__':
     from optparse import OptionParser

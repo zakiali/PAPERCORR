@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import casper_correlator,corr,ephem,aipy,numpy,sys
+import casper_correlator,corr,ephem,aipy,numpy,sys,socket
 
 # 2-14-2011 Z.A. added 16-31 in 'ants'. preparation for 64 input corr.
 if sys.argv[1:]==[]:
@@ -43,10 +43,21 @@ try:
                 sdisp_destination_ip=sdisp_destination_ip,
                 acc_len=acc_len)
     rx.start(port)
+    
+    time.sleep(5)
+
+    print 'Setting time lock...'    
+    trig_time = c.mcache.get('mcount_initialize_time')
+    time_skt = socket.socket(type=socket.SOCK_DGRAM)
+    pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,trig_time)
+    time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
+    time_skt.close()
+    print 'Time Pkt sent...'
+
 
     raw_input("Press Enter to terminate...\n") 
     #capture a bunch of stuff here
-
+    
     rx.stop()
 except(KeyboardInterrupt):
     rx.stop()

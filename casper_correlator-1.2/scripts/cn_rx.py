@@ -3,7 +3,7 @@ import casper_correlator,corr,ephem,aipy,numpy,sys,socket
 
 # 2-14-2011 Z.A. added 16-31 in 'ants'. preparation for 64 input corr.
 if sys.argv[1:]==[]:
-    print 'Please specify n for n-input correlator.'
+    print 'Please specify configuration file.'
     exit()      
 lh=corr.log_handlers.DebugLogHandler()
 c=corr.corr_functions.Correlator(sys.argv[1],lh)
@@ -47,9 +47,9 @@ try:
     time.sleep(5)
 
     print 'Setting time lock...'    
-    trig_time = c.mcache.get('mcount_initialize_time')
+    trig_time = float(c.mcache.get('mcount_initialize_time'))
     time_skt = socket.socket(type=socket.SOCK_DGRAM)
-    pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,trig_time)
+    pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,int(trig_time))
     time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
     time_skt.close()
     print 'Time Pkt sent...'

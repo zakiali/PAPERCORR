@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import casper_correlator,corr,ephem,aipy,numpy,sys,socket
+import casper_correlator,corr,ephem,aipy,numpy,sys,socket,time,struct
 
 # 2-14-2011 Z.A. added 16-31 in 'ants'. preparation for 64 input corr.
 if sys.argv[1:]==[]:

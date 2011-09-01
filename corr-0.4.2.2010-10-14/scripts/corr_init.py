@@ -141,8 +141,8 @@ try:
     print 'done'
 
     # ARM THE BEEs
-    print ''' Syncing the iBOBs, resetting F engine TVGs & setting FFT shift...''',
     if not opts.initialize:
+        print ''' Syncing the iBOBs''',
         sys.stdout.flush()
         trig_time=c.arm()
         print 'Armed. Expect trigg at %s local.'%(time.strftime('%H:%M:%S',time.localtime(trig_time))),
@@ -152,7 +152,8 @@ try:
         time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
         time_skt.close()
         print 'Pkt sent.'
-
+    
+    print '''resetting F engine TVGs & setting FFT shift...'''
     sys.stdout.flush()
     c.write_all_feng_ctrl(fft_shift = c.config['fft_shift'])
     print '''fft shift is set to %i''' %c.config['fft_shift']

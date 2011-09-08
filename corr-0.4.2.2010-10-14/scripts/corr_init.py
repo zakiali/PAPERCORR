@@ -69,6 +69,8 @@ if __name__ == '__main__':
         help='enable testing for 64 input correlator with 32 input hardware.')
     p.add_option('-n', '--noise', dest='noise', type='str',
         help ='picks out what noise sources to use.choices = "adc", "dig0", "dig1", "zero". ')
+    p.add_option('-i', '--init', dest='initialize', action='store_true',
+        help='skip initializing the ibobs (fengine).')
     opts, args = p.parse_args(sys.argv[1:])
 
     if args==[]:
@@ -140,15 +142,16 @@ try:
 
     # ARM THE BEEs
     print ''' Syncing the iBOBs, resetting F engine TVGs & setting FFT shift...''',
-    sys.stdout.flush()
-    trig_time=c.arm()
-    print 'Armed. Expect trigg at %s local.'%(time.strftime('%H:%M:%S',time.localtime(trig_time))),
-    c.mcache.set('mcount_initialize_time',str(trig_time))
-    time_skt=socket.socket(type=socket.SOCK_DGRAM)
-    pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,trig_time)
-    time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
-    time_skt.close()
-    print 'Pkt sent.'
+    if not opts.initialize:
+        sys.stdout.flush()
+        trig_time=c.arm()
+        print 'Armed. Expect trigg at %s local.'%(time.strftime('%H:%M:%S',time.localtime(trig_time))),
+        c.mcache.set('mcount_initialize_time',str(trig_time))
+        time_skt=socket.socket(type=socket.SOCK_DGRAM)
+        pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,trig_time)
+        time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
+        time_skt.close()
+        print 'Pkt sent.'
 
     sys.stdout.flush()
     c.write_all_feng_ctrl(fft_shift = c.config['fft_shift'])

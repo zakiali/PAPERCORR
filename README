@@ -1,0 +1,23 @@
+some mcache keys:
+'pxi:adc_sum',
+'pxi:adc_sum_squares',
+'pxi:gbe_rx_cnt',
+'pxi:gbe_rx_down',
+'pxi:gbe_rx_err_cnt',
+'pxi:gbe_tx_cnt',
+'pxi:gbe_tx_err',
+'pxi:last_miss_ant',
+'pxi:loop_cnt',
+'pxi:loop_error_cnt',
+'pxi:mcnts',
+'pxi:rx_cnt',
+'pxi:rx_err_cnt',
+'pxi:snap_xaui_raw:{0-3}:{0-2047}', i.e. : roach:snap_xaui_raw:antenna number:channel number. 
+NOTE: the snap xaui raw comes out as a string of length 256. = 4bit real/imag dual pol 128 integrations each. as... reximxreyimy...etc..
+'pxi:vacc_cnt',
+'pxi:vacc_err_cnt',
+'pxi:x_cnt',
+'pxi:x_miss',
+'pxi:xaui_errors',
+'pxi:xaui_rx_cnt',
+

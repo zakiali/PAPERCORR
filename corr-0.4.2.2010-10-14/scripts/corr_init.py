@@ -153,6 +153,7 @@ try:
         time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))
         time_skt.close()
         print 'Pkt sent.'
+    else: print '''Skipping initialization of iBOBs'''
     
     print '''resetting F engine TVGs & setting FFT shift...'''
     sys.stdout.flush()

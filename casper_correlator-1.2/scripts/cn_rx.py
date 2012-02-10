@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 import casper_correlator,corr,ephem,aipy,numpy,sys,socket,time,struct,syslog
 
 syslog.openlog('cn_rx.py')

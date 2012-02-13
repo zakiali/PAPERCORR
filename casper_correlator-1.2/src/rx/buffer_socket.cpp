@@ -1,8 +1,9 @@
+#include <signal.h>
 #include <syslog.h>
 #include "include/buffer_socket.h"
 
 int default_callback(char *data, size_t size, void *userdata) {
-    printf("    Readout packet of size %d\n", size);
+    printf("    Readout packet of size %lu\n", size);
     return 0;
 }
 
@@ -134,8 +135,10 @@ void *net_thread_function(void *arg) {
             } else  { // num_bytes == 0
                 timeouts += TIMEOUT_USEC;
                 if(timeouts >= 60*1000*1000) {
-                    fprintf(stderr, "No packets received for 60 seconds on port %d.\n", bs->port);
+                    fprintf(stdout, "No packets received for 60 seconds on port %d.\n", bs->port);
                     syslog(LOG_WARNING, "no packets received for 60 seconds on port %d\n", bs->port);
+                    // Send self the INT signal (simulate ctrl-c)
+                    raise(SIGINT);
                     timeouts = 0;
                 }
             }

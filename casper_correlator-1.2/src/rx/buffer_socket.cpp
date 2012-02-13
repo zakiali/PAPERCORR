@@ -2,7 +2,7 @@
 #include "include/buffer_socket.h"
 
 int default_callback(char *data, size_t size, void *userdata) {
-    printf("    Readout packet of size %d\n", size);
+    printf("    Readout packet of size %lu\n", size);
     return 0;
 }
 

@@ -56,17 +56,9 @@ try:
     time_skt.close()
     print 'Time Pkt sent...'
 
+    while True:
+      #capture a bunch of stuff here
+      time.sleep(10)
 
-    raw_input("Press Enter to terminate...\n") 
-    #capture a bunch of stuff here
-    
-    rx.stop()
 except(KeyboardInterrupt):
     rx.stop()
-
-
-
-
-
-
-

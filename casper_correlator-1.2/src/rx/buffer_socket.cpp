@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <syslog.h>
 #include "include/buffer_socket.h"
 
@@ -136,6 +137,8 @@ void *net_thread_function(void *arg) {
                 if(timeouts >= 60*1000*1000) {
                     fprintf(stdout, "No packets received for 60 seconds on port %d.\n", bs->port);
                     syslog(LOG_WARNING, "no packets received for 60 seconds on port %d\n", bs->port);
+                    // Send self the INT signal (simulate ctrl-c)
+                    raise(SIGINT);
                     timeouts = 0;
                 }
             }

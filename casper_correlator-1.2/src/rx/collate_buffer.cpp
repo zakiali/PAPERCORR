@@ -230,8 +230,8 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
         cb->n_reject = 0;
     } else if (pkt_t <= cb->cur_t - cb->nwin*cb->intsamps || pkt_t > cb->cur_t + cb->nwin*cb->intsamps) {
         // Case for locked on integration and rx out-of-range pkt
-        printf("Rejecting packet with timestamp %ld\ni.", pkt_t);
-        printf(" Timelock at %ld, accepting (%ld,%ld]\n", 
+        printf("Rejecting packet with timestamp %ld.\n", pkt_t);
+        printf(" Timelock at %ld, accepting (%ld,%ld]\n",
                 cb->cur_t, cb->cur_t - cb->nwin*cb->intsamps, cb->cur_t + cb->nwin*cb->intsamps);
         cb->n_reject += 1;
         if (cb->n_reject > MAX_REJECT) {

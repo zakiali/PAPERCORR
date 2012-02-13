@@ -134,7 +134,7 @@ void *net_thread_function(void *arg) {
             } else  { // num_bytes == 0
                 timeouts += TIMEOUT_USEC;
                 if(timeouts >= 60*1000*1000) {
-                    fprintf(stderr, "No packets received for 60 seconds on port %d.\n", bs->port);
+                    fprintf(stdout, "No packets received for 60 seconds on port %d.\n", bs->port);
                     syslog(LOG_WARNING, "no packets received for 60 seconds on port %d\n", bs->port);
                     timeouts = 0;
                 }

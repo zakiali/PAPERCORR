@@ -23,6 +23,7 @@
 #define ADC_RATE        100000000
 #define TIME_SCALE      128
 #define ACC_RANGE       2
+#define XENG_CHAN_MODE_CONTIGUOUS 1
 
 //ACC_RANGE is seconds around current timestamp which should be accepted as valid timestamps.
 //ADC_RATE is ADC sample rate in Hz. Used for scaling timestamps from correlator.
@@ -35,8 +36,10 @@ typedef struct {
     int *xeng_ai_order;
     int *xeng_aj_order;
     int nant;
+    int nants_per_feng;
     int nbl;
     int nchan;
+    int xeng_chan_mode;
     int npol;
     int nwin;
     int sdisp;
@@ -46,12 +49,13 @@ typedef struct {
     int64_t cur_t; // Change from uint64_t to int64_t is intentional (why?)
     int rd_win;
     int n_reject;
+    int is_gpu; // 0 for FPGA X engine, 1 for GPU X engine
     int (*callback)(int,int,int,int64_t,float *,int *, int, void *);
     int (*sdisp_callback)(int, int,int,int,int64_t,float *,int *, int, void *);
     void *userdata;
 } CollateBuffer;
     
-void init_collate_buffer(CollateBuffer *cb, int nant, int nchan, int npol, int nwin, int sdisp, char *sdisp_destination_ip, int acc_len);
+void init_collate_buffer(CollateBuffer *cb, int nant, int nants_per_feng, int nchan, int xeng_chan_mode, int npol, int nwin, int sdisp, char *sdisp_destination_ip, int acc_len);
 void free_collate_buffer(CollateBuffer cb);
 //int default_callback(int i, int j, int pol, double t, float *data, int *flags, int nchan, void *userdata);
 int default_callback(int i, int j, int pol, int64_t t, float *data, int *flags, int nchan, void *userdata);

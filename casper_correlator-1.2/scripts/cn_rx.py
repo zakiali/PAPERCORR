@@ -49,7 +49,12 @@ try:
     time.sleep(5)
 
     print 'Setting time lock...'    
-    trig_time = float(c.mcache.get('mcount_initialize_time'))
+
+    # Try new name first, then old name
+    try:
+        trig_time = float(c.mcache.get('roachf_init_time'))
+    except:
+        trig_time = float(c.mcache.get('mcount_initialize_time'))
     time_skt = socket.socket(type=socket.SOCK_DGRAM)
     pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,int(trig_time))
     time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))

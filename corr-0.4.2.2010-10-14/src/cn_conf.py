@@ -101,6 +101,15 @@ class CorrConf:
         self.config['10gbe_gpu_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_gpu_ip')))[0]
         #print '10GbE IP address is %i'%self.config['10gbe_ip']
 
+        gpuips = self.cp.get('correlator','gpu_ip').split(LISTDELIMIT)
+        if len(gpuips) != len(self.config['servers']):
+            print 'Number of fengines and xengines does not match!'
+            self.config['gpu_ips'] = []
+        else:
+            self.config['gpu_ips'] = []
+            for ip in gpuips:
+                self.config['gpu_ips'].append(struct.unpack('>I', socket.inet_aton(socket.gethostbyname(ip)))[0])
+
         self.config['n_bls']=self.config['n_ants']*(self.config['n_ants']+1)/2
         if self.config['ddc_mix_freq']<=0:
             #We're dealing with a "real" PFB, either wideband or narrowband.

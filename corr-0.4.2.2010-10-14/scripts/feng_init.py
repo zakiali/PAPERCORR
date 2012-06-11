@@ -41,7 +41,7 @@ lh = corr.log_handlers.DebugLogHandler()
 
 try:
     print 'Connecting...',
-    p = corr.corr_functions.Correlator(config_file = args[0],lh)
+    p = corr.corr_functions.Correlator(args[0],lh)
     for s,server in enumerate(c.config['servers']): c.loggers[s].setLevel(10)
     mcache = pylibmc.Client(['localhost'])
     print 'done.'

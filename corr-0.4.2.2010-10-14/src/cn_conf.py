@@ -70,6 +70,7 @@ class CorrConf:
         #get the correlator config stuff:
         self.read_int('correlator','n_chans')
         self.read_int('correlator','n_ants')
+        self.read_int('correlator','n_ants_per_feng')
         self.read_int('correlator','fft_shift')
         self.read_str('correlator','trig_mode')
         self.read_str('correlator','int_trig_serial_port')
@@ -80,6 +81,7 @@ class CorrConf:
         self.read_int('correlator','n_ants_per_xaui')
         self.read_int('correlator','clk_per_sync')
         self.read_int('correlator','xeng_acc_len')
+        self.read_int('correlator','xeng_chan_mode')
         self.read_float('correlator','ddc_mix_freq')
         self.read_int('correlator','ddc_decimation')
         self.read_int('correlator','10gbe_port')

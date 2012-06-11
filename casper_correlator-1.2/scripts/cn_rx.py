@@ -10,8 +10,10 @@ if sys.argv[1:]==[]:
 lh=corr.log_handlers.DebugLogHandler()
 c=corr.corr_functions.Correlator(sys.argv[1],lh)
 nants = c.config['n_ants']
+nants_per_feng = c.config['n_ants_per_feng']
 port = c.config['rx_udp_port']
 n_chans = c.config['n_chans']
+xeng_chan_mode = c.config['xeng_chan_mode']
 bandwidth = c.config['adc_clk']/2 # GHz
 sdf = bandwidth/n_chans
 sfreq = bandwidth # Second Nyquist zone
@@ -37,8 +39,9 @@ sdisp_destination_ip = "127.0.0.1"
 print "Sending signal display data to",sdisp_destination_ip
 
 try:
-    rx=casper_correlator.dacq.DataReceiver(aa, pols=pols, adc_rate=100000000,
-                nchan=n_chans, sfreq=sfreq, sdf=sdf,
+    rx=casper_correlator.dacq.DataReceiver(aa, nants_per_feng=nants_per_feng,
+                pols=pols, adc_rate=100000000, nchan=n_chans,
+                xeng_chan_mode=xeng_chan_mode, sfreq=sfreq, sdf=sdf,
                 inttime=int_time, t_per_file=t_per_file,
                 nwin=n_windows_to_buffer, bufferslots=n_bufferslots, 
                 payload_len=max_payload_len, sdisp=1, 
@@ -49,7 +52,12 @@ try:
     time.sleep(5)
 
     print 'Setting time lock...'    
-    trig_time = float(c.mcache.get('mcount_initialize_time'))
+
+    # Try new name first, then old name
+    try:
+        trig_time = float(c.mcache.get('roachf_init_time'))
+    except:
+        trig_time = float(c.mcache.get('mcount_initialize_time'))
     time_skt = socket.socket(type=socket.SOCK_DGRAM)
     pkt_str=struct.pack('>HHHHQ',0x5453,3,0,1,int(trig_time))
     time_skt.sendto(pkt_str,(c.config['rx_udp_ip_str'],c.config['rx_udp_port']))

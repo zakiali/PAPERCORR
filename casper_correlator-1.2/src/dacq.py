@@ -48,13 +48,14 @@ def start_uv_file(filename, aa, pols, nchan, sfreq, sdf, inttime):
     return uv
 
 class DataReceiver(rx.BufferSocket):
-    def __init__(self, aa, pols=['xx','yy','xy','yx'], adc_rate=100000000.,
-            nchan=2048, sfreq=0.121142578125, sdf=7.32421875e-05,
+    def __init__(self, aa, nants_per_feng=4, pols=['xx','yy','xy','yx'], adc_rate=100000000.,
+            nchan=2048, xeng_chan_mode=0, sfreq=0.121142578125, sdf=7.32421875e-05,
             inttime=14.3165578842, t_per_file=ephem.hour,
             nwin=4, bufferslots=128, payload_len=8192, sdisp=0, sdisp_destination_ip="127.0.0.1", acc_len=1024*128):
         rx.BufferSocket.__init__(self, item_count=bufferslots, payload_len=payload_len)
-        self.cb = rx.CollateBuffer(nant=len(aa), npol=len(pols),
-            nchan=nchan, nwin=nwin, sdisp=sdisp, sdisp_destination_ip=sdisp_destination_ip, acc_len=acc_len)
+        self.cb = rx.CollateBuffer(nant=len(aa), nants_per_feng=nants_per_feng, npol=len(pols),
+            nchan=nchan, xeng_chan_mode=xeng_chan_mode, nwin=nwin, sdisp=sdisp,
+            sdisp_destination_ip=sdisp_destination_ip, acc_len=acc_len)
         # Define a file-writing callback that starts/ends files when
         # appropriate and updates variables
         self.uv = None

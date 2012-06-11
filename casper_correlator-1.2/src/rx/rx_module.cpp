@@ -283,14 +283,33 @@ static PyObject *ColBufObject_new(PyTypeObject *type,
 // Initialize object (__init__)
 static int ColBufObject_init(ColBufObject *self,
         PyObject *args, PyObject *kwds) {
-    int nant=16, nchan=2048, npol=4, nwin=1, sdisp=0, acc_len=1;
+    int nant=16, nants_per_feng=4, nchan=2048, xeng_chan_mode=0, npol=4, nwin=1, sdisp=0, acc_len=1;
     char *sdisp_destination_ip = "127.0.0.1";
-    static char *kwlist[] = {"nant","nchan","npol","nwin","sdisp","sdisp_destination_ip", "acc_len",NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds,"|iiiiisi", kwlist, \
-            &nant, &nchan, &npol, &nwin, &sdisp, &sdisp_destination_ip, &acc_len))
+    static char *kwlist[] = {
+      "nant",
+      "nants_per_feng",
+      "nchan",
+      "xeng_chan_mode",
+      "npol",
+      "nwin",
+      "sdisp",
+      "sdisp_destination_ip",
+      "acc_len",
+      NULL
+    };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds,"|iiiiiiisi", kwlist, \
+            &nant,
+            &nants_per_feng,
+            &nchan,
+            &xeng_chan_mode,
+            &npol,
+            &nwin,
+            &sdisp,
+            &sdisp_destination_ip,
+            &acc_len))
         return -1;
     try {
-        init_collate_buffer(&(self->cb), nant, nchan, npol, nwin, sdisp, sdisp_destination_ip, acc_len);
+        init_collate_buffer(&(self->cb), nant, nants_per_feng, nchan, xeng_chan_mode, npol, nwin, sdisp, sdisp_destination_ip, acc_len);
     } catch (PacketError &e) {
         PyErr_Format(PyExc_MemoryError,
         "Couldn't allocate CollateBuffer for nant=%d,nchan=%d,npol=%d,nwin=%d",

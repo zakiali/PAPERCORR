@@ -92,10 +92,11 @@ int sdisp_callback(int corr_prod_id, int ai, int aj, int pol, int64_t t,
  return 0;
 }
 
-void init_collate_buffer(CollateBuffer *cb, int nant, int nchan, int npol, int nwin, int sdisp, char *sdisp_destination_ip, int acc_len) {
+void init_collate_buffer(CollateBuffer *cb, int nant, int nants_per_feng, int nchan, int xeng_chan_mode, int npol, int nwin, int sdisp, char *sdisp_destination_ip, int acc_len) {
     // Initialize a CollateBuffer
     int i, j, k, cnt=0, loop_pnt, flag, c;
     cb->nant = nant;
+    cb->nants_per_feng = nants_per_feng;
     cb->nbl = nant * (nant + 1) / 2;
     cb->xeng_ai_order = (int *)malloc(cb->nbl * sizeof(int));
     if (cb->xeng_ai_order == NULL) 
@@ -104,6 +105,7 @@ void init_collate_buffer(CollateBuffer *cb, int nant, int nchan, int npol, int n
     if (cb->xeng_aj_order == NULL)
         throw PacketError("Malloc error in init_collate_buffer()");
     cb->nchan = nchan;
+    cb->xeng_chan_mode = xeng_chan_mode;
     cb->npol = npol;
     cb->nwin = nwin;
     cb->sdisp = sdisp;
@@ -300,9 +302,14 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
         bl = (nvals / cb->npol) % cb->nbl;
         i = cb->xeng_ai_order[bl];
         j = cb->xeng_aj_order[bl];
-        ch = (nvals / cb->npol / cb->nbl) % ch_per_x; //freq channel on this xeng.
-        //ch = ch * cb->nant + pkt.instids.engine_id;
-        ch = ch * (cb->nant /X_PER_F) + pkt.instids.engine_id;
+        ch = nvals / (cb->npol * cb->nbl); //freq channel on this xeng.
+        //~ch = (nvals / cb->npol / cb->nbl) % ch_per_x; //freq channel on this xeng.
+        //~//ch = ch * cb->nant + pkt.instids.engine_id;
+        if(cb->xeng_chan_mode == XENG_CHAN_MODE_CONTIGUOUS) {
+          ch += ((cb->nchan /(cb->nant/cb->nants_per_feng)) * pkt.instids.engine_id);
+        } else {
+          ch = (ch % ch_per_x) * (cb->nant /X_PER_F) + pkt.instids.engine_id;
+        }
         //printf("Got %i bytes at offset %i for xeng %i. pol=%i, bl=%i,i=%i,j=%i,ch=%i. %i, %i\n",pkt.pktinfo.len,pkt.heap_off,pkt.instids.engine_id,pol,bl,i,j,ch,((int32_t *)(pkt.data + cnt))[0], ((int32_t *)(pkt.data + cnt))[1]); 
         //            if (ch == 0) fprintf(stderr," (%i,%i, pol %i,Ch:%i) D1: %i, D2: %i\n", i,j,pol,ch, ((int32_t *)(pkt.data + cnt))[0], ((int32_t *)(pkt.data + cnt))[1]);
         
@@ -310,8 +317,16 @@ int collate_packet(CollateBuffer *cb, CorrPacket pkt) {
         // Put this data in the appropriate place in the buffer
         //FORFEIT windows. only using one at a time. If you get a packet from the next timestamp, we move on, assuming that all data from the previous one was received.
         addr = ADDR((*cb),i,j,pol,ch, cb->rd_win);
-        if (addr+1 > cb->buflen)
+        if (addr+1 > cb->buflen) {
+            fprintf(stderr, "i=%d, j=%d, pol=%d, chan=%d, win=%d, xid=%d\n",
+                i, j, pol, ch, cb->rd_win, pkt.instids.engine_id);
             throw PacketError("Addr outside buffer space in collate_packet()");
+#if 0
+        } else if (i==0 && j==0 && pol==0 && ch==0) {
+            fprintf(stderr, "i=%d, j=%d, pol=%d, chan=%d, win=%d, xid=%d\n",
+                i, j, pol, ch, cb->rd_win, pkt.instids.engine_id);
+#endif
+        }
         // Copy real and then imaginary part
         cb->buf[addr] = ((int32_t *)(pkt.data + cnt))[0];
         cb->buf[addr+1] = ((int32_t *)(pkt.data + cnt))[1];

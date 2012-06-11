@@ -247,6 +247,20 @@ class Correlator:
             self.write2cacheF(FENG_CTL_ADDR,value,i+1)
         return self.write_all_ibobs(addr=FENG_CTL_ADDR,data=value)
 
+    def feng_ctrl_set_all(self, **kwargs):
+        """Valid keyword args include: 
+        'gbe_gpu_rst', 'gbe_sw_rst', 'loopbacl_mux_rst', 'cnt_rst', 'fft_preshift', 'gpio_monsel', 'fft_tvg2', 'fft_tvg1', 'gbe_gpu_disable','use_qdr_tvg', 'gbe_sw_disable', 'arm_rst', 'sync_rst', 'lb_err_cnt_rst'   
+        """
+        write_masked_register(self.ffpgas, pcorr.bitfields.register_fengine_control, **kwargs)
+
+    def feng_ctrl_get_all(self):
+        return read_masked_register(self.ffpgas, pcorr.bitfields.register_fengine_control)
+            #return corr.corr_nb.feng_status_get(self, ant_str)
+    
+    def feng_tvg_sel(self,fft_tvg1=False,fft_tvg2=False,qdr=False):
+        """Turns TVGs on/off on the F engines. FFT tvg1,2 and qdr tvg"""
+        self.feng_ctrl_set_all(fft_tvg1=fft_tvg1, fft_tvg2=fft_tvg2, use_qdr_tvg=qdr)
+
     def write_all_xeng_ctrl(self,loopback_mux_rst=False, gbe_out_enable=False, gbe_disable=False, cnt_rst=False, gbe_rst=False, vacc_rst=False):
         """Writes a value to all the Xengine control registers."""
         #WORKING 2009-12-01

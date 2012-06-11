@@ -68,7 +68,27 @@ class Correlator:
         """Programs all the FPGAs."""
         for fpga in self.fpgas:
             fpga.progdev(self.config['bitstream'])
+        if not self.check_fpga_comms():
+            raise RuntimeError("Failed to successfully program FPGAs.")
+        else:            self.syslogger.info("All FPGAs programmed ok.")
+            time.sleep(1)
             #time.sleep(4)
+
+    def check_fpga_comms(self):
+        """Checks FPGA <-> BORPH communications by writing a random number into a special register, reading it back and comparing."""
+        #Modified 2010-01-03 so that it works on 32 bit machines by only generating random numbers up to 2**30.
+        rv = True
+        for fn,fpga in enumerate(self.allfpgas):
+            #keep the random number below 2^32-1 and do not include zero (default register start value), but use a fair bit of the address space...
+            rn=numpy.random.randint(1,2**30)
+            try:
+                fpga.write_int('sys_scratchpad',rn)
+                self.loggers[fn].info("FPGA comms ok")
+            except:
+                rv=False
+                self.loggers[fn].error("FPGA comms failed")
+        if rv==True: self.syslogger.info("All FPGA comms ok.")
+        return rv    
 
     def deprog_all(self):
         """Deprograms all the FPGAs."""

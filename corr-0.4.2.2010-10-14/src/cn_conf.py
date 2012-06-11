@@ -85,6 +85,8 @@ class CorrConf:
         self.read_float('correlator','ddc_mix_freq')
         self.read_int('correlator','ddc_decimation')
         self.read_int('correlator','10gbe_port')
+        self.read_int('correlator','10gbe_sw_port')
+        self.read_int('correlator','10gbe_gpu_port')
         self.read_int('correlator','10gbe_pkt_len')
         self.read_int('correlator','feng_bits')
         self.read_int('correlator','feng_fix_pnt_pos')
@@ -94,6 +96,8 @@ class CorrConf:
         self.read_int('correlator','adc_levels_acc_len')
         self.read_int('correlator','antenna_offset_addr')
         self.config['10gbe_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_ip')))[0]
+        self.config['10gbe_sw_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_sw_ip')))[0]
+        self.config['10gbe_gpu_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_gpu_ip')))[0]
         #print '10GbE IP address is %i'%self.config['10gbe_ip']
 
         self.config['n_bls']=self.config['n_ants']*(self.config['n_ants']+1)/2

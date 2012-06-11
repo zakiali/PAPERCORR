@@ -23,7 +23,7 @@ Revisions:\n
 \n
 
 """
-import corr, time, sys, numpy, os, logging, katcp, struct, pylibmc
+import corr, time, sys, numpy, os, logging, katcp, struct, pylibmc, construct
 
 FENG_CTL_ADDR = 8192
 ANT_BASE_ADDR = 8193
@@ -31,6 +31,68 @@ INSEL_ADDR    = 8194
 DELAY_ADDR    = 8195
 SEED_ADDR     = 8196
 
+def write_masked_register(device_list, bitstruct, names = None, **kwargs):
+    """
+    Modify arbitrary bitfields within a 32-bit register, given a list of devices that offer the write_int 
+interface - should be KATCP FPGA devices.
+    """
+    # lazily let the read function check our arguments
+    currentValues = read_masked_register(device_list, bitstruct, names, return_dict = False)    wv = []
+    pulse_keys = []
+    for c in currentValues:
+        for key in kwargs:
+            if not c.__dict__.has_key(key): raise RuntimeError('Attempting to write key %s but it doesn\'t
+ exist in bitfield.' % key)
+            if kwargs[key] == 'pulse':
+                if pulse_keys.count(key) == 0: pulse_keys.append(key)
+            else:
+                c.__dict__[key] = (not c.__dict__[key]) if (kwargs[key] == 'toggle') else kwargs[key]
+        bitstring = bitstruct.build(c)
+        unpacked = struct.unpack('>I', bitstring)
+        wv.append(unpacked[0])
+    for d, device in enumerate(device_list):
+        device.write_int(c.register_name, wv[d])
+    # now pulse any that were asked to be pulsed
+    if len(pulse_keys) > 0:
+        #print 'Pulsing keys from write_... :(', pulse_keys        pulse_masked_register(device_list, bitstruct, pulse_keys)
+
+def read_masked_register(device_list, bitstruct, names = None, return_dict = True):
+    """
+    Read a 32-bit register from each of the devices (anything that provides the read_uint interface) in the supplied list and apply the given construct.BitStruct to the data.
+    A list of Containers or dictionaries is returned, indexing the same as the supplied list.
+    """
+    if bitstruct == None: return
+    if bitstruct.sizeof() !=  4: raise RuntimeError('Function can only work with 32-bit bitfields.')
+    registerNames = names
+    if registerNames == None:
+        registerNames = []
+        for d in device_list: registerNames.append(bitstruct.name)
+    if len(registerNames) !=  len(device_list): raise RuntimeError('Length of list of register names does not match length of list of devices given.')
+    rv = []
+    for d, device in enumerate(device_list):
+        vuint = device.read_uint(registerNames[d])
+        rtmp = bitstruct.parse(struct.pack('>I', vuint))
+        rtmp.raw = vuint
+        rtmp.register_name = registerNames[d]
+        if return_dict: rtmp = rtmp.__dict__
+        rv.append(rtmp)
+    return rv
+
+def pulse_masked_register(device_list, bitstruct, fields):
+    """
+    Pulse a boolean var somewhere in a masked register.
+    The fields argument is a list of strings representing the fields to be pulsed. Does NOT check Flag vs BitField, so make sure!
+    http://stackoverflow.com/questions/1098549/proper-way-to-use-kwargs-in-python
+    """
+    zeroKwargs = {}
+    oneKwargs = {}
+    for field in fields:
+      zeroKwargs[field] = 0
+      oneKwargs[field] = 1
+    #print zeroKwargs, '|', oneKwargs
+    write_masked_register(device_list, bitstruct, **zeroKwargs)
+    write_masked_register(device_list, bitstruct, **oneKwargs)
+    write_masked_register(device_list, bitstruct, **zeroKwargs)
 
 class Correlator:
     def __init__(self, config_file,log_handler):

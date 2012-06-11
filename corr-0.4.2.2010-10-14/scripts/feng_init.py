@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import pcorr
+import corr
 import pylibmc,time,struct,sys,os,numpy
 
 
@@ -37,9 +37,12 @@ if __name__ == '__main__':
     
     prog_fpga=opts.prog_fpga
 
+lh = corr.log_handlers.DebugLogHandler()
+
 try:
     print 'Connecting...',
-    p = pcorr.corr_functions.Correlator(config_file = args[0])
+    p = corr.corr_functions.Correlator(config_file = args[0],lh)
+    for s,server in enumerate(c.config['servers']): c.loggers[s].setLevel(10)
     mcache = pylibmc.Client(['localhost'])
     print 'done.'
 

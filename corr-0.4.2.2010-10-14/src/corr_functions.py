@@ -42,8 +42,7 @@ interface - should be KATCP FPGA devices.
     pulse_keys = []
     for c in currentValues:
         for key in kwargs:
-            if not c.__dict__.has_key(key): raise RuntimeError('Attempting to write key %s but it doesn\'t
- exist in bitfield.' % key)
+            if not c.__dict__.has_key(key): raise RuntimeError('Attempting to write key %s but it doesn\'t exist in bitfield.' % key)
             if kwargs[key] == 'pulse':
                 if pulse_keys.count(key) == 0: pulse_keys.append(key)
             else:

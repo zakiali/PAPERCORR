@@ -134,7 +134,6 @@ class Correlator:
         if not self.check_fpga_comms():
             raise RuntimeError("Failed to successfully program FPGAs.")
         else:   
-            self.syslogger.info("All FPGAs programmed ok.")
             time.sleep(1)
             #time.sleep(4)
 
@@ -151,7 +150,6 @@ class Correlator:
             except:
                 rv=False
                 self.loggers[fn].error("FPGA comms failed")
-        if rv==True: self.syslogger.info("All FPGA comms ok.")
         return rv    
 
     def deprog_all(self):

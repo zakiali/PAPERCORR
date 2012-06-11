@@ -37,7 +37,8 @@ def write_masked_register(device_list, bitstruct, names = None, **kwargs):
 interface - should be KATCP FPGA devices.
     """
     # lazily let the read function check our arguments
-    currentValues = read_masked_register(device_list, bitstruct, names, return_dict = False)    wv = []
+    currentValues = read_masked_register(device_list, bitstruct, names, return_dict = False)    
+    wv = []
     pulse_keys = []
     for c in currentValues:
         for key in kwargs:

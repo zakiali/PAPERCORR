@@ -54,7 +54,8 @@ interface - should be KATCP FPGA devices.
         device.write_int(c.register_name, wv[d])
     # now pulse any that were asked to be pulsed
     if len(pulse_keys) > 0:
-        #print 'Pulsing keys from write_... :(', pulse_keys        pulse_masked_register(device_list, bitstruct, pulse_keys)
+        #print 'Pulsing keys from write_... :(', pulse_keys        
+        pulse_masked_register(device_list, bitstruct, pulse_keys)
 
 def read_masked_register(device_list, bitstruct, names = None, return_dict = True):
     """
@@ -132,7 +133,8 @@ class Correlator:
             fpga.progdev(self.config['bitstream'])
         if not self.check_fpga_comms():
             raise RuntimeError("Failed to successfully program FPGAs.")
-        else:            self.syslogger.info("All FPGAs programmed ok.")
+        else:   
+            self.syslogger.info("All FPGAs programmed ok.")
             time.sleep(1)
             #time.sleep(4)
 

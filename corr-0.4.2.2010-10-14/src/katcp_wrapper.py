@@ -467,3 +467,43 @@ class FpgaClient(BlockingClient):
             secondpass=secondpass+(2**32)
         return (secondpass-firstpass)/2000000.
 
+    #PAPER specific Function
+    def write_fft_shift(self, val):        
+        '''This is a PAPER specific function. Write to the fft shift register on the 
+           PAPER roach based F engine.'''        
+        self.write_int('fft_shift', val)
+
+    #PAPER specific Function    
+    def write_insel(self, val):        
+        '''This is a PAPER specific function. Write to the input selector register on the            
+           PAPER roach based F engine. Ever hex digit identifies an in put on the roach 
+           (lsb = input 0, msb = input 7). Values can be 0 = ADC, 1 = dig noise 1, 
+           2 = dig noise 2, 3 = digital 0.'''
+        self.write_int('input_selector', val)
+
+    #PAPER specific Function    
+    def write_delay(self, val):
+        '''This is a PAPER specific function. Write to the delay register on the 
+           PAPER roach based F engine. This is a course delay. delay of 0 - 15.
+           lsb = input 0, msb = input 7. hex values'''
+        self.write_int('delay_values', val)
+
+    #PAPER specific Function
+    def write_seed(self, val):
+        '''This is a PAPER specific function. Write to the seed register on the 
+           PAPER roach based F engine. Gives different seed values to noise generators.'''
+        self.write_int('seed_data', val)
+
+    #PAPER specific Function
+    def write_eq(self, ant, stringarray):
+        '''This is a PAPER specific function. Write to eq brams on the 
+           PAPER roach based F engine. String array is a string of length 4*1024, which represents
+           the eq coefficients we want to write into the bram. Each coefficients is NCHAN/1024 adjacent 
+           channels. Note that the eq coeff is a Fix 18_5 number. Antenna is which 
+           bram to write into (which inputs/antennas we want the equalise.)'''
+        self.write('EQ_eq%d_coeffs'%ant, stringarray)
+
+    #PAPER specific function
+    def write_eq_0(self,ant):
+        '''Zero out all equalisation coefficients.'''
+        self.write_eq(ant, 1024*'\x00\x00\x00\x00')

@@ -142,7 +142,7 @@ class Correlator:
         """Checks FPGA <-> BORPH communications by writing a random number into a special register, reading it back and comparing."""
         #Modified 2010-01-03 so that it works on 32 bit machines by only generating random numbers up to 2**30.
         rv = True
-        for fn,fpga in enumerate(self.allfpgas):
+        for fn,fpga in enumerate(self.fpgas):
             #keep the random number below 2^32-1 and do not include zero (default register start value), but use a fair bit of the address space...
             rn=numpy.random.randint(1,2**30)
             try:

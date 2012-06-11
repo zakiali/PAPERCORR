@@ -68,6 +68,7 @@ class CorrConf:
         self.config['bitstream'] = self.cp.get('borphserver','bitstream')
 
         #get the correlator config stuff:
+        self.read_int('correlator','xmode')
         self.read_int('correlator','n_chans')
         self.read_int('correlator','n_ants')
         self.read_int('correlator','n_ants_per_feng')
@@ -129,13 +130,14 @@ class CorrConf:
         #self.read_int('equalisation','eq_brams_per_pol_interleave')
         self.config['eq']=dict()
         self.config['eq']['eq_polys']=[]
-        for ant in range(self.config['n_ants']):
-            for pol in ['x','y']:
-                ant_eq_str=self.get_line('equalisation','eq_poly_%i%c'%(ant,pol))
-                if (ant_eq_str):
-                    self.config['eq']['eq_poly_%i%c'%(ant,pol)]=[int(coef) for coef in ant_eq_str.split(LISTDELIMIT)]
-                else:
-                    raise('ERR eq_poly_%i%c'%(ant,pol))
+        if not self.config['xmode']:
+            for ant in range(self.config['n_ants']):
+                for pol in ['x','y']:
+                    ant_eq_str=self.get_line('equalisation','eq_poly_%i%c'%(ant,pol))
+                    if (ant_eq_str):
+                        self.config['eq']['eq_poly_%i%c'%(ant,pol)]=[int(coef) for coef in ant_eq_str.split(LISTDELIMIT)]
+                    else:
+                        raise('ERR eq_poly_%i%c'%(ant,pol))
 
 #        # get the antenna info:
 #        self.config['antennas']=dict()

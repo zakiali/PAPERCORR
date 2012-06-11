@@ -251,10 +251,10 @@ class Correlator:
         """Valid keyword args include: 
         'gbe_gpu_rst', 'gbe_sw_rst', 'loopbacl_mux_rst', 'cnt_rst', 'fft_preshift', 'gpio_monsel', 'fft_tvg2', 'fft_tvg1', 'gbe_gpu_disable','use_qdr_tvg', 'gbe_sw_disable', 'arm_rst', 'sync_rst', 'lb_err_cnt_rst'   
         """
-        write_masked_register(self.ffpgas, pcorr.bitfields.register_fengine_control, **kwargs)
+        write_masked_register(self.fpgas, pcorr.bitfields.register_fengine_control, **kwargs)
 
     def feng_ctrl_get_all(self):
-        return read_masked_register(self.ffpgas, pcorr.bitfields.register_fengine_control)
+        return read_masked_register(self.fpgas, pcorr.bitfields.register_fengine_control)
             #return corr.corr_nb.feng_status_get(self, ant_str)
     
     def feng_tvg_sel(self,fft_tvg1=False,fft_tvg2=False,qdr=False):

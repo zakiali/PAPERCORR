@@ -26,6 +26,7 @@ t_per_file=ephem.minute*10
 n_windows_to_buffer=4
 n_bufferslots=10240
 max_payload_len=8192
+payload_data_type = c.config['payload_data_type']
 ants=[]
 for i in range(nants):
     ants.append((i,i,i))
@@ -44,8 +45,8 @@ try:
                 xeng_chan_mode=xeng_chan_mode, sfreq=sfreq, sdf=sdf,
                 inttime=int_time, t_per_file=t_per_file,
                 nwin=n_windows_to_buffer, bufferslots=n_bufferslots, 
-                payload_len=max_payload_len, sdisp=1, 
-                sdisp_destination_ip=sdisp_destination_ip,
+                payload_len=max_payload_len, payload_data_type=payload_data_type,
+                sdisp=1, sdisp_destination_ip=sdisp_destination_ip,
                 acc_len=acc_len)
     rx.start(port)
     

@@ -96,6 +96,7 @@ class CorrConf:
         self.read_int('correlator','adc_bits')
         self.read_int('correlator','adc_levels_acc_len')
         self.read_int('correlator','antenna_offset_addr')
+        self.read_int('correlator','payload_data_type')
         self.config['10gbe_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_ip')))[0]
         self.config['10gbe_sw_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_sw_ip')))[0]
         self.config['10gbe_gpu_ip']=struct.unpack('>I',socket.inet_aton(self.cp.get('correlator','10gbe_gpu_ip')))[0]

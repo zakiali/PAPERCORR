@@ -79,7 +79,7 @@ try:
 
         print('done.')
     else: 
-        print(' This is a %d input correlator system, with %d actual roach boards.'%(p.config.['n_ants']*2,len(p.fpgas)))
+        print(' This is a %d input correlator system, with %d actual roach boards.'%(p.config['n_ants']*2,len(p.fpgas)))
     
     #Disable 10gbe cores until network has been set up.Do reset as well.
     #feng ctl bits... 20 = gbe_gpu_disable, 18 = gbe_sw_disable, 30 = gbe_sw_rst, 31 = gbe_gpu_rst

@@ -66,8 +66,9 @@ try:
     print 'Initial configuration'
     print '====================='
 
-    print('Determining number of inputs in the system and setting fengine type register...')
-    if p.config['bitstream'] == 'roachf_1024ch_ma_2012_May_30_1841.bof':
+    #if p.config['bitstream'] == 'roachf_1024ch_ma_2012_May_30_1841.bof':
+    if 'ma' in p.config['bitstream']:
+        print('Determining number of inputs in the system and setting fengine type register...')
         sys.stdout.flush()
         corr_types = [16,32,64,128,256,512]
         ninputs = p.config['n_ants']*2
@@ -75,7 +76,10 @@ try:
         mux_values = corr_types.index(ninputs)   #0 if 16input, 1 if 32 inputs, 2 if 64 inputs...5 if 512
         for f, fpga in enumerate(p.fpgas):
             fpga.write_int('n_inputs', mux_values)
-    print('done,')
+
+        print('done.')
+    else: 
+        print(' This is a %d input correlator system, with %d actual roach boards.'%(p.config.['n_ants']*2,len(p.fpgas)))
     
     #Disable 10gbe cores until network has been set up.Do reset as well.
     #feng ctl bits... 20 = gbe_gpu_disable, 18 = gbe_sw_disable, 30 = gbe_sw_rst, 31 = gbe_gpu_rst
@@ -91,12 +95,13 @@ try:
     #Syncing up FEngines
     print 'Syncing F engines...',
     sys.stdout.flush()
-    ready = ((int(time.time()*10)%10) == 5)
+    ready = ((int(time.time()*10)%10) == 2)
     while not ready:
-        ready = ((int(time.time()*10)%10) == 5)
+        ready = ((int(time.time()*10)%10) == 2)
 
+    t1 = time.time()
     p.feng_ctrl_set_all(arm_rst='pulse')
-
+    print time.time() - t1
     trig_time = numpy.ceil(time.time())
     print('Armed. Expect trigg at %s local.'%(time.strftime('%H:%M:%S',time.localtime(trig_time)))),
     mcache.set('roachf_init_time', str(trig_time))        

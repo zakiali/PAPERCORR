@@ -46,6 +46,7 @@ try:
     mcache = pylibmc.Client(['localhost'])
     print 'done.'
 
+    print p.config['servers']
 
     if prog_fpga:
         print 'Clearing the FPGAs...',
@@ -80,7 +81,7 @@ try:
     #Set seeds for the digital noise sources.Note that this needs to be done before syncing fengines
     print ('Writing to seed register for digital noise.'),
     for f, fpga in enumerate(p.fpgas):
-        fpga.write_int('seed',0x01234567)
+        fpga.write_int('seed_data',0x01234567)
     print ('done.')
 
     #Syncing up FEngines
@@ -110,7 +111,7 @@ try:
     print ('Setting fft shift schedule, and noise sources'),
     for i, f in enumerate(p.fpgas):
         f.write_int('fft_shift', p.config['fft_shift'])
-        f.write_int('input_selector', 0x12121212)
+        f.write_int('input_selector', 0x33333333)
         #mcache.set('pf%d:fft_shift'%i, opts.fft_shift)
     print 'done.'
 
@@ -128,13 +129,24 @@ try:
 
     #configure eq coefficients.
     #XXX make this option.
-    print 'Configuring eq coeficients...',
+    #print 'Configuring eq coeficients...',
+    #for fpga in p.fpgas:
+    #    coeff = opts.coeff << 3
+    #    for i in range(4):
+    #        fpga.write_int('EQ_quant%d_gain'%i,coeff)
+    #        for addr in range(1024):
+    #            fpga.write_int('EQ_quant%d_addr'%i,addr)
+    #print 'done.'
+    #print 'Configuring eq coeficients...',
     for fpga in p.fpgas:
-        coeff = opts.coeff << 3
+        coeff = 0
         for i in range(4):
-            fpga.write_int('quant%d_gain'%i,coeff)
+            fpga.write_int('EQ_quant%d_gain'%i,coeff)
             for addr in range(1024):
-                fpga.write_int('quant%d_addr',addr)
+                fpga.write_int('EQ_quant%d_addr'%i,addr)
+
+    fpga.write_int('EQ_quant0_gain',700<<3)
+    fpga.write_int('EQ_quant0_addr',16)
     print 'done.'
             
         
@@ -148,7 +160,7 @@ try:
     arp_table[-1] = (2**48)-1
     #pre- populating the arp tables
     ninputs = p.config['n_ants']*2
-    for i in range(ninputs/8):
+    for i in range(ninputs/4):
         mac, ip, port = p.get_roach_gbe_conf(gbe_sw_ip_base, i, gbe_sw_port)
         print mac, ip 
         arp_table[ip%256] = mac

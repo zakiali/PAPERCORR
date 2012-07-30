@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import corr, os, numpy, sys, pylibmc, optparse, time,struct
 
 regs = ['bram_msb', 'bram_lsb', 'bram_oob']

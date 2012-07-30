@@ -5,12 +5,16 @@ xamples :
 
 paper_eq_ctrl.py ~/path/to/conf/file.conf  -i 0 -c 0 : turns on input 0 and channel 0. gives channel 0 eq coeff 700<<3 (default. -e controls that).
 
-paper_eq_ctrl.py ~/path/to/conf.file.conf -i 3 -c 83 : turns off input 3 /chan 83. Since we dont want to update input 0's coeffs that stays the same.
+paper_eq_ctrl.py ~/path/to/conf.file.conf -i 3 -c 83 : turns on input 3/chan 83. This also turns off input0/ch0, but keeps the in0,ch0 eqcoeff on.
 
-paper_eq_ctrl.py ~/path/to/conf.file.conf -i 0 -c 43 : turns off in 0/ch 0  and turns on ch 4
+paper_eq_ctrl.py ~/path/to/conf.file.conf -i 3 -c 43 --update : turns on in 3 ch 43, in addition to keeping 83 on.If instead you left off the --updateit would have turned off ch 83.
 
-paper_eq_ctrl.py ~/pthtoconf - i 0 -c 0 -- update : turns on input zero chan 0 without turning off chan 43.
+paper_eq_ctrl.py ~/pthtoconf - i 0 -c 1 --update : turns on input zero chan 1 without turning off in 3, chan 43. Note that in 0, ch 0 was already on.
+leave --update off to turn off ch0 from before. This will also turn off input3.
 
+doing a --updateallchans, will only write coeffs for channels given on the input line. If --update given with --updateallchans, it will update the channels given on the command line and inputs, but will write zeros in the eq coeff for the other inputs. It will do almost the same thing. 
+
+do a --zeroant, --zeroallchan for a hard reset. Set all values to zero.
 '''
 import corr, numpy as n 
 import optparse, sys
@@ -110,9 +114,11 @@ try:
     o.add_option('-i', '--input', dest='inputs',type='string', default='0', 
             help='which input(s) to turn on. This is a list.default is 0')
     o.add_option('-c', '--chan', dest='chan', type='string', default='0',
-            help='which channels to set. supports range of channels, 5_19 = channels 5 through 19. default is channel 0.')
+            help='which channels to set. supports range of channels, 5_19 = channels 5 through 19(inclusive). default is channel 0.')
     o.add_option('-e', '--coeff', dest='coeff', type='int', default=700<<7,
             help='equalization coefficient. default is 700<<7.')
+    o.add_option('-v', '--inval', dest='inval', type='string', default='1',
+            help='What value to write into input selector for inputs given on the commandline. Default is 1=noise source. ')
     o.add_option('--zeroant', dest='zeroant', action='store_true',
             help='digital zero every antenna')
     o.add_option('--zerochans', dest='zerochans', action='store_true',
@@ -214,7 +220,6 @@ try:
         #Turn on the proper inputs. Note that the equalizer blocks give the same coeffincients to inputs
         #(0,4),(1,5),(2,6),(3,7). Hence there is no full flexibilty for turning on certain channels for 
         #certain inputs.
-        print eqchs[0][0]
         for fpga, inputs in dict.iteritems():
             for inn in inputs:
                 eqchs[fpga][inn][channels] = coeff
@@ -228,7 +233,7 @@ try:
         if opts.updateallchans:
             for fpga in range(ninputs/4):
                 #8 = number of inputs per f engine
-                print 'writing coefficients for pf%d'%fpga,
+                print 'writing coefficients for pf%d'%fpga
                 for i in range(8):
                     data = eqchs[fpga][i].byteswap().tostring()
                     if i > 3:
@@ -236,23 +241,22 @@ try:
                     else:
                         p.fpgas[fpga].write('eq_%d_coeffs'%(i%4),data)
 
-        for key in dict.keys():
+        for f, fpga in enumerate(p.fpgas):
             if opts.update:
-                init_val = n.array(list(hex(p.fpgas[key].read_int('input_selector'))[::-1][:-2]))
+                init_val = n.array(list(hex(fpga.read_int('input_selector'))[::-1][:-2]))
             else:     
                 init_val = n.array(list('0x33333333')[::-1][:-2])
-            init_val[dict[key]] = '1' #noise source on has value = 1
+            if f in dict.keys():
+                init_val[dict[f]] = opts.inval
             s = ''
             for v in init_val:
                 s += v
             s = s[::-1]
-            p.fpgas[key].write_int('input_selector', int(s,16))
-            print 'writing into input select on FPGA %d, with hex value %s'%(key,s)
+            fpga.write_int('input_selector', int(s,16))
+            print 'writing into input select on FPGA %d, with hex value %s'%(f,s)
 
         print 'Channels that have nonzero eq coefficients'
         print channels
-
-
 
 except(KeyboardInterrupt):
     exit()

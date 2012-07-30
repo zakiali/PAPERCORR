@@ -1,3 +1,17 @@
+#! /usr/bin/env python
+
+''' This script reads and writes from the input selector and eq coeff registers/brams on the ROACH F Engines.
+xamples : 
+
+paper_eq_ctrl.py ~/path/to/conf/file.conf  -i 0 -c 0 : turns on input 0 and channel 0. gives channel 0 eq coeff 700<<3 (default. -e controls that).
+
+paper_eq_ctrl.py ~/path/to/conf.file.conf -i 3 -c 83 : turns off input 3 /chan 83. Since we dont want to update input 0's coeffs that stays the same.
+
+paper_eq_ctrl.py ~/path/to/conf.file.conf -i 0 -c 43 : turns off in 0/ch 0  and turns on ch 4
+
+paper_eq_ctrl.py ~/pthtoconf - i 0 -c 0 -- update : turns on input zero chan 0 without turning off chan 43.
+
+'''
 import corr, numpy as n 
 import optparse, sys
 
@@ -103,8 +117,8 @@ try:
             help='digital zero every antenna')
     o.add_option('--zerochans', dest='zerochans', action='store_true',
             help='zero out all the equalization channels on all roachs. Will take a few seconds')
-    o.add_option('--keepinp', dest='keepint', action='store_true', 
-            help='By default, all the inputs are not initialized to zero, before turning on the requested inputs from the command line inputs are updated! This option bypasses that and zeros out all antennas before selecting which inputs to turn on.')
+    o.add_option('--update', dest='update', action='store_true',
+            help='update channels and inputs. This does not set values to zero then write in command line values')
     o.add_option('--updateallchans', dest='updateallchans', action='store_true', 
             help='By default the only eq coefficients for inputs that are given on the command line are updated. This means that it updates all the channels for an eq block ( input).  This option bypasses that and updates all eq coefficients. This is helpfull when you dont know what channels are up and want the command line map tp stick.')
     o.add_option('--report', dest='report', action='store_true',
@@ -149,18 +163,11 @@ try:
     ##############################  SET VALUES  ##################################################################
 
     else:    
-        #initialize dictionary of equalization coefficients.
-        ninputs = p.config['n_ants']
-        eqchs = {}
-        #4 dual pol ants per f engine (i.e. number of eq blocks)
-        for input in range(ninputs/4):
-            eqchs[input] = {}
-            for linput in range(8):
-                eqchs[input][linput] = n.zeros(1024,n.int32)
-
-        #eqchs is a dictionary mapped to inputs that has { fpga : input on fpga: array value} etc..
+              #eqchs is a dictionary mapped to inputs that has { fpga : input on fpga: array value} etc..
         # note that locally on a roach input 0 and input 4 share the same eq coefficient bram. likewise with 
         #inputs (1,5),(2,6),(3,7).
+
+        ninputs = p.config['n_ants']
 
         if opts.zerochans:
             print 'zeroing out all of the equalization coefficients'
@@ -172,18 +179,12 @@ try:
                 print 'writing coefficients for pf%d'%fpga
             print 'exiting...    '
             exit()    
-        if opts.zeroant or opts.keepint:
+        if opts.zeroant: 
             coeff = 0
             for fpga in p.fpgas:
                 fpga.write_int('input_selector', 0x33333333)
             print 'Digital zero on all antennas. Exiting...'
-            if not opts.keepint:
-                exit()    
-            else: 
-                c_inputs = opts.inputs.split(',')
-                c_inputs.sort()
-                channels = get_chans(opts.chan)
-                coeff = opts.coeff
+            exit()    
 
         else:        
             c_inputs = opts.inputs.split(',')
@@ -192,10 +193,28 @@ try:
             print channels
             coeff = opts.coeff
         
+        dict = get_in(c_inputs)
+
+        #initialize dictionary of equalization coefficients.
+        eqchs = {}
+
+        for input in range(ninputs/4):
+            eqchs[input] = {}
+            for linput in range(8):
+                eqchs[input][linput] = n.zeros(1024,n.int32)
+
+        if opts.update:
+            for fpga,inputs in dict.iteritems():
+                for inn in inputs:
+                    if inn > 3:
+                        eqchs[fpga][inn] = n.array(unpack('>1024I',p.fpgas[fpga].read('eq_%i_coeffs'%(inn%4),1024*4,1024*4)),dtype=n.int32)
+                    else:
+                        eqchs[fpga][inn] = n.array(unpack('>1024I',p.fpgas[fpga].read('eq_%i_coeffs'%(inn%4),1024*4)),dtype=n.int32)
+
         #Turn on the proper inputs. Note that the equalizer blocks give the same coeffincients to inputs
         #(0,4),(1,5),(2,6),(3,7). Hence there is no full flexibilty for turning on certain channels for 
         #certain inputs.
-        dict = get_in(c_inputs)
+        print eqchs[0][0]
         for fpga, inputs in dict.iteritems():
             for inn in inputs:
                 eqchs[fpga][inn][channels] = coeff
@@ -218,7 +237,10 @@ try:
                         p.fpgas[fpga].write('eq_%d_coeffs'%(i%4),data)
 
         for key in dict.keys():
-            init_val = n.array(list(hex(p.fpgas[key].read_int('input_selector'))[::-1][:-2]))
+            if opts.update:
+                init_val = n.array(list(hex(p.fpgas[key].read_int('input_selector'))[::-1][:-2]))
+            else:     
+                init_val = n.array(list('0x33333333')[::-1][:-2])
             init_val[dict[key]] = '1' #noise source on has value = 1
             s = ''
             for v in init_val:
